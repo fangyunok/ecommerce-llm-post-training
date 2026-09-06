@@ -12,6 +12,8 @@ outputs/evaluation/*
 !outputs/evaluation/exp001_extended.summary.json
 !outputs/evaluation/exp002_extended.jsonl
 !outputs/evaluation/exp002_extended.summary.json
+!outputs/evaluation/exp003_extended.jsonl
+!outputs/evaluation/exp003_extended.summary.json
 checkpoints/
 wandb/
 .idea/

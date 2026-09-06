@@ -1,0 +1,46 @@
+{
+  "cases": 40,
+  "passed": 21,
+  "strict_accuracy": 0.525,
+  "mean_latency_seconds": 1.187,
+  "completion_tokens": 1385,
+  "result_file": "outputs/evaluation/exp003_extended.jsonl",
+  "by_category": {
+    "信息不足": {
+      "cases": 3,
+      "passed": 1,
+      "strict_accuracy": 0.3333
+    },
+    "否定属性": {
+      "cases": 8,
+      "passed": 4,
+      "strict_accuracy": 0.5
+    },
+    "完整摘要": {
+      "cases": 7,
+      "passed": 6,
+      "strict_accuracy": 0.8571
+    },
+    "必选属性": {
+      "cases": 2,
+      "passed": 2,
+      "strict_accuracy": 1.0
+    },
+    "数值筛选": {
+      "cases": 11,
+      "passed": 4,
+      "strict_accuracy": 0.3636
+    },
+    "无合适商品": {
+      "cases": 3,
+      "passed": 1,
+      "strict_accuracy": 0.3333
+    },
+    "预算约束": {
+      "cases": 6,
+      "passed": 3,
+      "strict_accuracy": 0.5
+    }
+  },
+  "summary_file": "outputs/evaluation/exp003_extended.summary.json"
+}
