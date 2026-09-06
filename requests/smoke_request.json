@@ -1,0 +1,12 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "商品信息：A款耳机299元、续航30小时、支持降噪；B款239元、续航40小时、不支持降噪。用户预算250元并重视续航，请推荐。"
+    }
+  ],
+  "max_new_tokens": 128,
+  "do_sample": false,
+  "repetition_penalty": 1.05
+}
+

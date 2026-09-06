@@ -1,0 +1,9 @@
+{"id":"budget_battery_001","category":"硬约束推荐","messages":[{"role":"user","content":"商品信息：A款耳机299元、续航30小时、支持主动降噪；B款耳机239元、续航40小时、不支持主动降噪。用户预算250元并最重视续航，请推荐并说明理由。"}],"checks":{"all_of":["推荐B款","239","40"],"any_of":[],"none_of":[]}}
+{"id":"noise_cancel_001","category":"属性匹配","messages":[{"role":"user","content":"商品信息：A款耳机299元、续航30小时、支持主动降噪；B款耳机239元、续航40小时、不支持主动降噪。用户预算350元，必须支持主动降噪，请推荐并说明理由。"}],"checks":{"all_of":["推荐A款","主动降噪"],"any_of":[],"none_of":[]}}
+{"id":"no_match_001","category":"无合适商品","messages":[{"role":"user","content":"商品信息：A款手机售价3299元，不防水；B款手机售价2899元，不防水。用户预算2500元且必须防水，请推荐。"}],"checks":{"all_of":[],"any_of":["都不","没有","无合适","不满足","无法推荐"],"none_of":[]}}
+{"id":"insufficient_001","category":"信息不足","messages":[{"role":"user","content":"用户想购买一台续航超过10小时、重量低于1.5kg的笔记本。现有资料只提供了商品价格，没有续航和重量信息。请判断是否可以推荐。"}],"checks":{"all_of":[],"any_of":["信息不足","无法判断","不能判断","无法推荐"],"none_of":[]}}
+{"id":"summary_001","category":"事实摘要","messages":[{"role":"user","content":"商品信息：轻羽保温杯，容量500ml，316不锈钢内胆，保温12小时，售价89元。请概括核心卖点，不要添加资料中没有的信息。"}],"checks":{"all_of":["500ml","316","12小时","89元"],"any_of":[],"none_of":["抗菌","智能","终身"]}}
+{"id":"adjustable_001","category":"硬约束判断","messages":[{"role":"user","content":"商品信息：云感枕售价159元，记忆棉材质，高度不可调节。用户预算200元，且必须能够调节高度。请判断这款商品是否合适。"}],"checks":{"all_of":["不可调"],"any_of":["不合适","不满足","不推荐"],"none_of":["很合适","推荐购买"]}}
+{"id":"lowest_price_001","category":"排序选择","messages":[{"role":"user","content":"三款充电宝参数如下：A款129元、10000mAh；B款159元、20000mAh；C款99元、10000mAh。用户只要求10000mAh及以上，并优先选择价格最低的商品。请推荐。"}],"checks":{"all_of":["推荐C款","99元"],"any_of":[],"none_of":[]}}
+{"id":"wifi6_001","category":"属性匹配","messages":[{"role":"user","content":"A路由器售价199元，支持Wi-Fi 5；B路由器售价249元，支持Wi-Fi 6。用户预算300元，并明确要求Wi-Fi 6。请推荐。"}],"checks":{"all_of":["推荐B","Wi-Fi 6"],"any_of":[],"none_of":[]}}
+

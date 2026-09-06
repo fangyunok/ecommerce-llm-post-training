@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.venv/
+outputs/*
+!outputs/evaluation/
+outputs/evaluation/*
+!outputs/evaluation/baseline.jsonl
+!outputs/evaluation/baseline.summary.json
+checkpoints/
+wandb/
+.idea/
+.vscode/
+.env
+.pytest_cache/
+.cache/
+models/
+

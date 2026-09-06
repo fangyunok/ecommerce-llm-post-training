@@ -1,0 +1,10 @@
+{
+  "cases": 8,
+  "passed": 2,
+  "strict_accuracy": 0.25,
+  "mean_latency_seconds": 17.904,
+  "completion_tokens": 648,
+  "result_file": "outputs\\evaluation\\baseline.jsonl",
+  "note": "Qwen2.5-0.5B-Instruct，CPU，确定性解码；评测规则收紧后最终基线。"
+}
+
