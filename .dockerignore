@@ -1,0 +1,13 @@
+.git
+.github
+.venv
+.venv-train
+.cache
+models
+outputs
+checkpoints
+wandb
+__pycache__
+*.pyc
+*.tar
+*.tar.gz

@@ -1,0 +1,17 @@
+services:
+  shopping-assistant:
+    build: .
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      MODEL_ID: ${MODEL_ID:-Qwen/Qwen2.5-0.5B-Instruct}
+      ADAPTER_PATH: ${ADAPTER_PATH:-}
+      PRELOAD_MODEL: ${PRELOAD_MODEL:-true}
+      ENABLE_LLM_EXTRACTION_FALLBACK: ${ENABLE_LLM_EXTRACTION_FALLBACK:-false}
+      HF_HOME: /models/huggingface
+    volumes:
+      - huggingface-cache:/models/huggingface
+    restart: unless-stopped
+
+volumes:
+  huggingface-cache:

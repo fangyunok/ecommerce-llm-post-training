@@ -84,4 +84,22 @@ class NaturalLanguageRecommendationRequest(BaseModel):
 class NaturalLanguageRecommendationResponse(BaseModel):
     extracted: RuleRecommendationRequest
     recommendation: RuleRecommendationResponse
-    extraction_source: Literal["deterministic_parser"] = "deterministic_parser"
+    extraction_source: Literal["deterministic_parser", "llm_fallback"] = "deterministic_parser"
+
+
+class ExtractionTrace(BaseModel):
+    source: Literal["deterministic_parser", "llm_fallback"]
+    rule_error: str | None = None
+
+
+class ShoppingAssistantRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=12_000)
+    mode: Literal["auto", "decision", "chat"] = "auto"
+
+
+class ShoppingAssistantResponse(BaseModel):
+    answer: str
+    route: Literal["deterministic_rules", "llm_extraction_rules", "language_model"]
+    extraction: RuleRecommendationRequest | None = None
+    recommendation: RuleRecommendationResponse | None = None
+    usage: Usage | None = None
