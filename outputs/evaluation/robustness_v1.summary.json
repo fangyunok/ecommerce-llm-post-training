@@ -1,0 +1,42 @@
+{
+  "cases": 35,
+  "passed": 35,
+  "strict_accuracy": 1.0,
+  "by_category": {
+    "冲突条件": {
+      "cases": 5,
+      "passed": 5,
+      "strict_accuracy": 1.0
+    },
+    "单位换算": {
+      "cases": 5,
+      "passed": 5,
+      "strict_accuracy": 1.0
+    },
+    "多级排序": {
+      "cases": 5,
+      "passed": 5,
+      "strict_accuracy": 1.0
+    },
+    "字段缺失": {
+      "cases": 5,
+      "passed": 5,
+      "strict_accuracy": 1.0
+    },
+    "无合适商品": {
+      "cases": 5,
+      "passed": 5,
+      "strict_accuracy": 1.0
+    },
+    "自由名称": {
+      "cases": 5,
+      "passed": 5,
+      "strict_accuracy": 1.0
+    },
+    "阈值过滤": {
+      "cases": 5,
+      "passed": 5,
+      "strict_accuracy": 1.0
+    }
+  }
+}

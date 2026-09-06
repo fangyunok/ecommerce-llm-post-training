@@ -57,6 +57,20 @@ class RecommendationEngineTests(unittest.TestCase):
         self.assertIsNone(result.selected_product)
         self.assertIn("没有合适商品", result.answer)
 
+    def test_uses_secondary_sort_for_ties(self):
+        request = RuleRecommendationRequest.model_validate(
+            {
+                "products": [
+                    {"name": "甲", "values": {"capacity": 256, "price": 299}},
+                    {"name": "乙", "values": {"capacity": 256, "price": 259}},
+                    {"name": "丙", "values": {"capacity": 128, "price": 199}},
+                ],
+                "sort": {"field": "capacity", "direction": "desc"},
+                "tie_breakers": [{"field": "price", "direction": "asc"}],
+            }
+        )
+        self.assertEqual(recommend_by_rules(request).selected_product, "乙")
+
 
 if __name__ == "__main__":
     unittest.main()

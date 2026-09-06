@@ -22,6 +22,8 @@ outputs/evaluation/*
 !outputs/evaluation/hybrid_rules_v1_extended.summary.json
 !outputs/evaluation/extraction_v1.jsonl
 !outputs/evaluation/extraction_v1.summary.json
+!outputs/evaluation/robustness_v1.jsonl
+!outputs/evaluation/robustness_v1.summary.json
 checkpoints/
 wandb/
 .idea/

@@ -66,6 +66,7 @@ class RuleRecommendationRequest(BaseModel):
     products: list[RuleProduct] = Field(min_length=1, max_length=100)
     constraints: list[RuleConstraint] = Field(default_factory=list, max_length=20)
     sort: RuleSort
+    tie_breakers: list[RuleSort] = Field(default_factory=list, max_length=10)
     reason_fields: list[str] = Field(default_factory=list, max_length=20)
 
 

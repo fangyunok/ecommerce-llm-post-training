@@ -55,6 +55,12 @@ def _extract_product(name: str, chunk: str) -> RuleProduct:
             values[field] = value
             display[field] = f"{field_label(field)}{value:g}{unit}"
 
+    if "weight" not in values:
+        grams = _number(r"(\d+(?:\.\d+)?)\s*g(?![a-z])", chunk)
+        if grams is not None:
+            values["weight"] = grams / 1000
+            display["weight"] = f"重量{grams:g}g"
+
     gb = _number(r"(\d+(?:\.\d+)?)\s*GB", chunk)
     if gb is not None:
         field = "memory" if "主机" in name or "内存" in chunk else "capacity"
@@ -94,7 +100,28 @@ def _extract_products(text: str) -> list[RuleProduct]:
             products.append(product)
             seen.add(name)
     if len(products) < 2:
+        products = _extract_generic_products(description)
+    if len(products) < 2:
         raise ValueError("无法稳定识别至少两个候选商品，请改用结构化规则接口")
+    return products
+
+
+def _extract_generic_products(description: str) -> list[RuleProduct]:
+    products: list[RuleProduct] = []
+    for raw_clause in re.split(r"[；;]", description):
+        clause = raw_clause.strip(" ，。")
+        if "：" in clause:
+            clause = clause.rsplit("：", 1)[-1]
+        match = re.match(
+            r"(?P<name>[A-Za-z0-9\u4e00-\u9fff·_-]{1,30}?)(?="
+            r"(?:售价|价格|重(?:量)?|容量|内存|主摄|续航|\d))",
+            clause,
+        )
+        if not match:
+            continue
+        product = _extract_product(match.group("name"), clause[match.end() :])
+        if product.values:
+            products.append(product)
     return products
 
 
@@ -147,31 +174,59 @@ def _extract_constraints(text: str) -> list[RuleConstraint]:
         if constraint not in constraints:
             constraints.append(constraint)
 
+    upper_pattern = re.compile(
+        r"(?:不得超过|不能超过|不高于|至多)\s*"
+        r"(\d+(?:\.\d+)?)\s*(mAh|GB|TB|英寸|Hz|MP)",
+        flags=re.IGNORECASE,
+    )
+    for match in upper_pattern.finditer(text):
+        constraints.append(
+            RuleConstraint(
+                field=_unit_field(match.group(2), text),
+                operator="le",
+                value=float(match.group(1)),
+            )
+        )
+
     weight = _number(r"重量(?:不得超过|不超过|不高于|至多)\s*(\d+(?:\.\d+)?)\s*kg", text)
     if weight is not None:
         constraints.append(RuleConstraint(field="weight", operator="le", value=weight))
     return constraints
 
 
-def _extract_sort(text: str) -> RuleSort:
+def _capacity_field(products: list[RuleProduct]) -> str:
+    for field in ("capacity", "battery_capacity", "storage"):
+        if any(field in product.values for product in products):
+            return field
+    return "capacity"
+
+
+def _extract_sorts(text: str, products: list[RuleProduct]) -> tuple[RuleSort, list[RuleSort]]:
+    if re.search(r"(?:容量最大|优先容量|容量优先)", text):
+        primary = RuleSort(field=_capacity_field(products), direction="desc")
+        tie_breakers = []
+        if re.search(r"(?:相同|一样).*(?:价格最低|低价|更便宜)", text):
+            tie_breakers.append(RuleSort(field="price", direction="asc"))
+        return primary, tie_breakers
     if re.search(r"续航(?:最长|更长|最久)|优先续航", text):
-        return RuleSort(field="battery", direction="desc")
+        return RuleSort(field="battery", direction="desc"), []
     if re.search(r"像素最高|主摄最高", text):
-        return RuleSort(field="camera", direction="desc")
+        return RuleSort(field="camera", direction="desc"), []
     if re.search(r"价格(?:最低|较低|低)|最低价|最便宜|更便宜|低价|从低到高", text):
-        return RuleSort(field="price", direction="asc")
-    return RuleSort(field="price", direction="asc")
+        return RuleSort(field="price", direction="asc"), []
+    return RuleSort(field="price", direction="asc"), []
 
 
 def extract_rule_request(text: str) -> RuleRecommendationRequest:
     products = _extract_products(text)
     constraints = _extract_constraints(text)
-    sort = _extract_sort(text)
+    sort, tie_breakers = _extract_sorts(text, products)
     reason_fields = [sort.field]
     reason_fields.extend(constraint.field for constraint in constraints if constraint.field != sort.field)
     return RuleRecommendationRequest(
         products=products,
         constraints=constraints,
         sort=sort,
+        tie_breakers=tie_breakers,
         reason_fields=list(dict.fromkeys(reason_fields)),
     )

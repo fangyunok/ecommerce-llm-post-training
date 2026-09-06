@@ -1,0 +1,35 @@
+{"id": "free_name_price_01", "category": "自由名称", "text": "星河台灯售价100元；云帆台灯售价90元；青岚台灯售价110元。三款功能相同，选择价格最低的。", "expected_selected": "云帆台灯"}
+{"id": "unit_weight_01", "category": "单位换算", "text": "星河电脑价格4801元、重1310g；云帆电脑价格5001元、重1.2kg；青岚电脑价格4701元、重1.6kg。预算不超过4901元，重量不高于1.4kg，优先低价。", "expected_selected": "星河电脑"}
+{"id": "capacity_filter_01", "category": "阈值过滤", "text": "星河充电宝价格80元、容量8000mAh；云帆充电宝价格110元、容量12000mAh；青岚充电宝价格100元、容量12000mAh。容量不低于10000mAh，选择最低价。", "expected_selected": "青岚充电宝"}
+{"id": "multi_sort_01", "category": "多级排序", "text": "星河移动盘售价300元、容量256GB；云帆移动盘售价260元、容量256GB；青岚移动盘售价200元、容量128GB。优先容量最大，容量相同选价格最低。", "expected_selected": "云帆移动盘"}
+{"id": "no_match_01", "category": "无合适商品", "text": "星河耳机售价400元、续航30小时；云帆耳机售价500元、续航50小时。预算不超过300元，优先续航。", "expected_selected": null, "expected_outcome": "no_match"}
+{"id": "missing_field_01", "category": "字段缺失", "text": "星河电脑售价4501元；云帆电脑售价4701元。预算不超过5000元，重量不高于1.3kg，优先低价。", "expected_selected": null, "expected_outcome": "insufficient"}
+{"id": "conflicting_constraints_01", "category": "冲突条件", "text": "星河存储卡售价100元、容量64GB；云帆存储卡售价130元、容量128GB。容量至少128GB且不得超过64GB，选择最低价。", "expected_selected": null, "expected_outcome": "no_match"}
+{"id": "free_name_price_02", "category": "自由名称", "text": "远山台灯售价101元；流光台灯售价91元；墨羽台灯售价111元。三款功能相同，选择价格最低的。", "expected_selected": "流光台灯"}
+{"id": "unit_weight_02", "category": "单位换算", "text": "远山电脑价格4802元、重1320g；流光电脑价格5002元、重1.2kg；墨羽电脑价格4702元、重1.6kg。预算不超过4902元，重量不高于1.4kg，优先低价。", "expected_selected": "远山电脑"}
+{"id": "capacity_filter_02", "category": "阈值过滤", "text": "远山充电宝价格81元、容量8000mAh；流光充电宝价格111元、容量12000mAh；墨羽充电宝价格101元、容量12000mAh。容量不低于10000mAh，选择最低价。", "expected_selected": "墨羽充电宝"}
+{"id": "multi_sort_02", "category": "多级排序", "text": "远山移动盘售价301元、容量256GB；流光移动盘售价261元、容量256GB；墨羽移动盘售价201元、容量128GB。优先容量最大，容量相同选价格最低。", "expected_selected": "流光移动盘"}
+{"id": "no_match_02", "category": "无合适商品", "text": "远山耳机售价401元、续航30小时；流光耳机售价501元、续航50小时。预算不超过300元，优先续航。", "expected_selected": null, "expected_outcome": "no_match"}
+{"id": "missing_field_02", "category": "字段缺失", "text": "远山电脑售价4502元；流光电脑售价4702元。预算不超过5000元，重量不高于1.3kg，优先低价。", "expected_selected": null, "expected_outcome": "insufficient"}
+{"id": "conflicting_constraints_02", "category": "冲突条件", "text": "远山存储卡售价101元、容量64GB；流光存储卡售价131元、容量128GB。容量至少128GB且不得超过64GB，选择最低价。", "expected_selected": null, "expected_outcome": "no_match"}
+{"id": "free_name_price_03", "category": "自由名称", "text": "晨星台灯售价102元；北辰台灯售价92元；南风台灯售价112元。三款功能相同，选择价格最低的。", "expected_selected": "北辰台灯"}
+{"id": "unit_weight_03", "category": "单位换算", "text": "晨星电脑价格4803元、重1330g；北辰电脑价格5003元、重1.2kg；南风电脑价格4703元、重1.6kg。预算不超过4903元，重量不高于1.4kg，优先低价。", "expected_selected": "晨星电脑"}
+{"id": "capacity_filter_03", "category": "阈值过滤", "text": "晨星充电宝价格82元、容量8000mAh；北辰充电宝价格112元、容量12000mAh；南风充电宝价格102元、容量12000mAh。容量不低于10000mAh，选择最低价。", "expected_selected": "南风充电宝"}
+{"id": "multi_sort_03", "category": "多级排序", "text": "晨星移动盘售价302元、容量256GB；北辰移动盘售价262元、容量256GB；南风移动盘售价202元、容量128GB。优先容量最大，容量相同选价格最低。", "expected_selected": "北辰移动盘"}
+{"id": "no_match_03", "category": "无合适商品", "text": "晨星耳机售价402元、续航30小时；北辰耳机售价502元、续航50小时。预算不超过300元，优先续航。", "expected_selected": null, "expected_outcome": "no_match"}
+{"id": "missing_field_03", "category": "字段缺失", "text": "晨星电脑售价4503元；北辰电脑售价4703元。预算不超过5000元，重量不高于1.3kg，优先低价。", "expected_selected": null, "expected_outcome": "insufficient"}
+{"id": "conflicting_constraints_03", "category": "冲突条件", "text": "晨星存储卡售价102元、容量64GB；北辰存储卡售价132元、容量128GB。容量至少128GB且不得超过64GB，选择最低价。", "expected_selected": null, "expected_outcome": "no_match"}
+{"id": "free_name_price_04", "category": "自由名称", "text": "轻舟台灯售价103元；飞鸿台灯售价93元；月白台灯售价113元。三款功能相同，选择价格最低的。", "expected_selected": "飞鸿台灯"}
+{"id": "unit_weight_04", "category": "单位换算", "text": "轻舟电脑价格4804元、重1340g；飞鸿电脑价格5004元、重1.2kg；月白电脑价格4704元、重1.6kg。预算不超过4904元，重量不高于1.4kg，优先低价。", "expected_selected": "轻舟电脑"}
+{"id": "capacity_filter_04", "category": "阈值过滤", "text": "轻舟充电宝价格83元、容量8000mAh；飞鸿充电宝价格113元、容量12000mAh；月白充电宝价格103元、容量12000mAh。容量不低于10000mAh，选择最低价。", "expected_selected": "月白充电宝"}
+{"id": "multi_sort_04", "category": "多级排序", "text": "轻舟移动盘售价303元、容量256GB；飞鸿移动盘售价263元、容量256GB；月白移动盘售价203元、容量128GB。优先容量最大，容量相同选价格最低。", "expected_selected": "飞鸿移动盘"}
+{"id": "no_match_04", "category": "无合适商品", "text": "轻舟耳机售价403元、续航30小时；飞鸿耳机售价503元、续航50小时。预算不超过300元，优先续航。", "expected_selected": null, "expected_outcome": "no_match"}
+{"id": "missing_field_04", "category": "字段缺失", "text": "轻舟电脑售价4504元；飞鸿电脑售价4704元。预算不超过5000元，重量不高于1.3kg，优先低价。", "expected_selected": null, "expected_outcome": "insufficient"}
+{"id": "conflicting_constraints_04", "category": "冲突条件", "text": "轻舟存储卡售价103元、容量64GB；飞鸿存储卡售价133元、容量128GB。容量至少128GB且不得超过64GB，选择最低价。", "expected_selected": null, "expected_outcome": "no_match"}
+{"id": "free_name_price_05", "category": "自由名称", "text": "松影台灯售价104元；竹语台灯售价94元；海棠台灯售价114元。三款功能相同，选择价格最低的。", "expected_selected": "竹语台灯"}
+{"id": "unit_weight_05", "category": "单位换算", "text": "松影电脑价格4805元、重1350g；竹语电脑价格5005元、重1.2kg；海棠电脑价格4705元、重1.6kg。预算不超过4905元，重量不高于1.4kg，优先低价。", "expected_selected": "松影电脑"}
+{"id": "capacity_filter_05", "category": "阈值过滤", "text": "松影充电宝价格84元、容量8000mAh；竹语充电宝价格114元、容量12000mAh；海棠充电宝价格104元、容量12000mAh。容量不低于10000mAh，选择最低价。", "expected_selected": "海棠充电宝"}
+{"id": "multi_sort_05", "category": "多级排序", "text": "松影移动盘售价304元、容量256GB；竹语移动盘售价264元、容量256GB；海棠移动盘售价204元、容量128GB。优先容量最大，容量相同选价格最低。", "expected_selected": "竹语移动盘"}
+{"id": "no_match_05", "category": "无合适商品", "text": "松影耳机售价404元、续航30小时；竹语耳机售价504元、续航50小时。预算不超过300元，优先续航。", "expected_selected": null, "expected_outcome": "no_match"}
+{"id": "missing_field_05", "category": "字段缺失", "text": "松影电脑售价4505元；竹语电脑售价4705元。预算不超过5000元，重量不高于1.3kg，优先低价。", "expected_selected": null, "expected_outcome": "insufficient"}
+{"id": "conflicting_constraints_05", "category": "冲突条件", "text": "松影存储卡售价104元、容量64GB；竹语存储卡售价134元、容量128GB。容量至少128GB且不得超过64GB，选择最低价。", "expected_selected": null, "expected_outcome": "no_match"}

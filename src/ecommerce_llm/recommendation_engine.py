@@ -44,20 +44,27 @@ def recommend_by_rules(request: RuleRecommendationRequest) -> RuleRecommendation
             answer=answer,
         )
 
-    sortable = [product for product in eligible if request.sort.field in product.values]
+    sort_rules = [request.sort, *request.tie_breakers]
+    sortable = [
+        product
+        for product in eligible
+        if all(rule.field in product.values for rule in sort_rules)
+    ]
     if not sortable:
+        fields = "、".join(rule.field for rule in sort_rules)
         return RuleRecommendationResponse(
             selected_product=None,
             eligible_products=[product.name for product in eligible],
-            answer=f"信息不足，缺少{request.sort.field}，无法完成排序推荐。",
+            answer=f"信息不足，缺少{fields}，无法完成排序推荐。",
         )
 
-    reverse = request.sort.direction == "desc"
-    selected = sorted(
-        sortable,
-        key=lambda product: (product.values[request.sort.field], product.name),
-        reverse=reverse,
-    )[0]
+    ranked = sorted(sortable, key=lambda product: product.name)
+    for rule in reversed(sort_rules):
+        ranked.sort(
+            key=lambda product: product.values[rule.field],
+            reverse=rule.direction == "desc",
+        )
+    selected = ranked[0]
     facts = [selected.display[field] for field in request.reason_fields if field in selected.display]
     reason = "，".join(facts)
     answer = f"推荐{selected.name}。{reason}。" if reason else f"推荐{selected.name}。"
