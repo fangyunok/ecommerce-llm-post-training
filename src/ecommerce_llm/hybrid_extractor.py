@@ -15,7 +15,10 @@ class Generator(Protocol):
 
 SYSTEM_PROMPT = """你是电商约束抽取器，只输出一个JSON对象，不解释且不使用Markdown。
 字段为products、constraints、sort、tie_breakers、reason_fields。商品含name、values、display；约束含field、operator、value。
-operator只能为le/lt/ge/gt/eq，direction只能为asc/desc，数值必须是JSON数字。不得编造原文没有的商品或参数。"""
+operator只能为le/lt/ge/gt/eq，direction只能为asc/desc，数值必须是JSON数字。不得编造原文没有的商品或参数。
+字段名约定：价格price、重量weight（kg）、续航battery（小时）、电池容量battery_capacity（mAh）、内存memory（GB）、存储storage（TB）、屏幕screen（英寸）、刷新率refresh_rate（Hz）、主摄camera（MP）。
+示例输入：甲耳机200元续航30小时，乙耳机180元续航20小时；预算190元，续航优先。
+示例输出：{"products":[{"name":"甲耳机","values":{"price":200,"battery":30}},{"name":"乙耳机","values":{"price":180,"battery":20}}],"constraints":[{"field":"price","operator":"le","value":190}],"sort":{"field":"battery","direction":"desc"},"tie_breakers":[],"reason_fields":["price","battery"]}"""
 
 
 def parse_json_object(text: str) -> dict:

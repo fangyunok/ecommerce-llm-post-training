@@ -41,3 +41,9 @@ POST /v1/shopping-assistant
 - 已验证：GitHub Actions生产镜像构建成功，Docker job耗时1分54秒；
 - 当前Windows开发机没有Docker，因此容器运行验证由GitHub Linux runner完成；
 - 未验证：LLM抽取回退尚未在真实1.5B模型上评测。
+
+真实模型回退评测使用5道刻意无法被规则解析的开放表达：
+
+```powershell
+python scripts\evaluate_llm_fallback.py
+```

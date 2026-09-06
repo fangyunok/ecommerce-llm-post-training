@@ -1,0 +1,5 @@
+{"id":"fallback_prose_phone","text":"在两部手机之间纠结。极光Pro卖2399元，主摄64MP；远峰Max要2599元，主摄108MP。我最多花2400元，在买得起的里面像素越高越好。","expected_selected":"极光Pro"}
+{"id":"fallback_prose_laptop","text":"候选笔记本里，星轨Book的价格是5299元而重量1.4kg，云端Book价格4999元但重量1.6kg。我的上限是5400元，并且绝不能重于1.5kg，合格后挑便宜的。","expected_selected":"星轨Book"}
+{"id":"fallback_prose_power","text":"移动电源有轻羽版，容量10000mAh价格99元；还有长风版，容量20000mAh价格169元。需求是容量至少15000mAh，价格低者优先。","expected_selected":"长风版"}
+{"id":"fallback_prose_monitor","text":"显示设备参数分别是：晨星屏售价1099元且144Hz，暮云屏售价899元但只有75Hz。预算1200元，同时刷新率不能低于120Hz。","expected_selected":"晨星屏"}
+{"id":"fallback_prose_storage","text":"用于素材备份的硬盘，海蓝盘是2TB、799元，山石盘是1TB、499元。容量要求不小于2TB，在满足条件后选择低价产品。","expected_selected":"海蓝盘"}
