@@ -43,10 +43,20 @@ def main() -> None:
         default=str(PROJECT_ROOT / "models" / "Qwen2.5-0.5B-Instruct"),
     )
     parser.add_argument("--max-length", type=int, default=1024)
+    parser.add_argument(
+        "--train-file",
+        type=Path,
+        default=PROJECT_ROOT / "data" / "processed" / "sft_train.jsonl",
+    )
+    parser.add_argument(
+        "--validation-file",
+        type=Path,
+        default=PROJECT_ROOT / "data" / "processed" / "sft_validation.jsonl",
+    )
     args = parser.parse_args()
 
-    train_path = PROJECT_ROOT / "data" / "processed" / "sft_train.jsonl"
-    validation_path = PROJECT_ROOT / "data" / "processed" / "sft_validation.jsonl"
+    train_path = args.train_file
+    validation_path = args.validation_file
     train = load_jsonl(train_path)
     validation = load_jsonl(validation_path)
 
@@ -104,4 +114,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

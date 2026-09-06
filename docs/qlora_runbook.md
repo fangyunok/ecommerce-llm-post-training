@@ -25,6 +25,24 @@ python scripts/preflight_training.py --model /path/to/Qwen2.5-0.5B-Instruct
 
 实验002使用`data/eval/ecommerce_eval_v2.jsonl`的40条人工评测题。该文件保留原8题，并增加预算边界、否定属性、数值筛选和完整摘要题；不得将这些题目或答案复制到训练集。
 
+实验003数据单独生成，不覆盖v2：
+
+```bash
+python scripts/generate_sft_data.py --profile v3
+python scripts/preflight_training.py \
+  --model Qwen/Qwen2.5-0.5B-Instruct \
+  --train-file data/processed/sft_train_v3.jsonl \
+  --validation-file data/processed/sft_validation_v3.jsonl
+python -m src.training.train_qlora \
+  --model Qwen/Qwen2.5-0.5B-Instruct \
+  --train-file data/processed/sft_train_v3.jsonl \
+  --validation-file data/processed/sft_validation_v3.jsonl \
+  --output-dir outputs/sft_adapter_v3 \
+  --epochs 3 --learning-rate 2e-4 --batch-size 2 \
+  --gradient-accumulation 8 --max-length 1024 \
+  --lora-r 16 --lora-alpha 32
+```
+
 ## GPU环境
 
 建议使用Linux、Python 3.11和单张NVIDIA GPU。新建独立虚拟环境，避免训练依赖影响已有应用：

@@ -251,6 +251,83 @@ def all_affordable_sort(rng: random.Random) -> dict:
     return wrap(user, answer, "预算内排序")
 
 
+def explicit_budget_comparison(rng: random.Random) -> dict:
+    """显式教授价格与预算的大小关系，性能不能覆盖预算硬约束。"""
+    a, b = product_names(rng)
+    budget = rng.randrange(200, 601, 10)
+    over_price = budget + rng.choice([1, 5, 20, 50])
+    valid_price = budget - rng.choice([0, 10, 30, 50])
+    over_value = rng.randrange(80, 121, 5)
+    valid_value = rng.randrange(30, 76, 5)
+    if rng.random() < 0.5:
+        rows = [(a, over_price, over_value), (b, valid_price, valid_value)]
+        chosen, rejected = b, a
+    else:
+        rows = [(a, valid_price, valid_value), (b, over_price, over_value)]
+        chosen, rejected = a, b
+    user = (
+        f"{rows[0][0]}售价{rows[0][1]}元、性能分{rows[0][2]}；"
+        f"{rows[1][0]}售价{rows[1][1]}元、性能分{rows[1][2]}。"
+        f"预算最多{budget}元，绝对不能超预算，然后才比较性能。请选择。"
+    )
+    answer = (
+        f"推荐{chosen}。{rejected}售价{over_price}元，大于{budget}元预算，必须排除；"
+        f"{chosen}售价{valid_price}元，小于或等于预算。即使{rejected}性能更高也不能选择。"
+    )
+    return wrap(user, answer, "预算显式比较")
+
+
+def all_over_budget(rng: random.Random) -> dict:
+    a, b = product_names(rng)
+    budget = rng.randrange(150, 501, 10)
+    a_price = budget + rng.choice([1, 10, 30, 50])
+    b_price = budget + rng.choice([5, 20, 40, 80])
+    user = (
+        f"候选商品只有{a}和{b}，价格分别为{a_price}元、{b_price}元。"
+        f"用户最多支付{budget}元，不能追加预算。请问有可推荐商品吗？"
+    )
+    answer = (
+        f"没有合适商品。{a_price}元和{b_price}元都大于{budget}元预算，"
+        f"两款均超出预算，因此不能推荐。"
+    )
+    return wrap(user, answer, "全部超预算")
+
+
+def all_missing_feature(rng: random.Random) -> dict:
+    a, b = product_names(rng)
+    feature = rng.choice(FEATURES)
+    budget = rng.randrange(300, 701, 10)
+    a_price = rng.randrange(100, budget + 1, 10)
+    b_price = rng.randrange(100, budget + 1, 10)
+    first_negative, second_negative = rng.sample(NEGATIONS, 2)
+    user = (
+        f"{a}售价{a_price}元，{first_negative.format(feature=feature)}；"
+        f"{b}售价{b_price}元，{second_negative.format(feature=feature)}。"
+        f"两款都在{budget}元预算内，但用户必须要{feature}。请推荐。"
+    )
+    answer = (
+        f"没有合适商品。虽然两款价格都符合预算，但{a}和{b}均不支持{feature}，"
+        "没有任何一款满足必选属性，因此不能推荐。"
+    )
+    return wrap(user, answer, "全部缺少必选属性")
+
+
+def partial_insufficient_info(rng: random.Random) -> dict:
+    item = f"{rng.choice(PREFIXES)}{rng.randint(100, 999)}款"
+    price = rng.randrange(500, 5001, 100)
+    known_feature, missing_feature = rng.sample(FEATURES, 2)
+    budget = price + rng.randrange(100, 501, 100)
+    user = (
+        f"{item}售价{price}元，资料确认支持{known_feature}，但没有说明是否支持{missing_feature}。"
+        f"用户预算{budget}元，同时必须具备{known_feature}和{missing_feature}。能推荐吗？"
+    )
+    answer = (
+        f"信息不足，暂时无法推荐。价格和{known_feature}已满足，但资料缺少"
+        f"{missing_feature}信息，不能判断该硬性条件是否满足。"
+    )
+    return wrap(user, answer, "单项信息缺失")
+
+
 GENERATORS: list[Callable[[random.Random], dict]] = [
     budget_priority,
     budget_boundary,
@@ -263,10 +340,22 @@ GENERATORS: list[Callable[[random.Random], dict]] = [
     fact_summary,
 ]
 
+V3_GENERATORS: list[Callable[[random.Random], dict]] = [
+    *GENERATORS,
+    explicit_budget_comparison,
+    all_over_budget,
+    all_missing_feature,
+    partial_insufficient_info,
+]
 
-def build_split(size: int, seed: int) -> list[dict]:
+
+def build_split(
+    size: int,
+    seed: int,
+    generators: list[Callable[[random.Random], dict]] = GENERATORS,
+) -> list[dict]:
     rng = random.Random(seed)
-    rows = [GENERATORS[index % len(GENERATORS)](rng) for index in range(size)]
+    rows = [generators[index % len(generators)](rng) for index in range(size)]
     rng.shuffle(rows)
     return rows
 
@@ -291,18 +380,28 @@ def validate(rows: list[dict]) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--train-size", type=int, default=1800)
-    parser.add_argument("--validation-size", type=int, default=225)
+    parser.add_argument("--profile", choices=["v2", "v3"], default="v2")
+    parser.add_argument("--train-size", type=int)
+    parser.add_argument("--validation-size", type=int)
     parser.add_argument("--seed", type=int, default=20260906)
     args = parser.parse_args()
 
-    train = build_split(args.train_size, args.seed)
-    validation = build_split(args.validation_size, args.seed + 1)
+    generators = GENERATORS if args.profile == "v2" else V3_GENERATORS
+    train_size = args.train_size or (1800 if args.profile == "v2" else 2600)
+    validation_size = args.validation_size or (225 if args.profile == "v2" else 325)
+    train = build_split(train_size, args.seed, generators)
+    validation = build_split(validation_size, args.seed + 1, generators)
     validate(train)
     validate(validation)
 
-    train_path = PROJECT_ROOT / "data" / "processed" / "sft_train.jsonl"
-    validation_path = PROJECT_ROOT / "data" / "processed" / "sft_validation.jsonl"
+    train_prompts = {row["prompt"][-1]["content"] for row in train}
+    validation_prompts = {row["prompt"][-1]["content"] for row in validation}
+    if train_prompts & validation_prompts:
+        raise ValueError("训练集与验证集存在完全相同的prompt")
+
+    suffix = "" if args.profile == "v2" else "_v3"
+    train_path = PROJECT_ROOT / "data" / "processed" / f"sft_train{suffix}.jsonl"
+    validation_path = PROJECT_ROOT / "data" / "processed" / f"sft_validation{suffix}.jsonl"
     write_jsonl(train_path, train)
     write_jsonl(validation_path, validation)
     print(f"训练集：{len(train)} 条 -> {train_path}")

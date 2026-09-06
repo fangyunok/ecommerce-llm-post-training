@@ -2,7 +2,7 @@ import unittest
 from collections import Counter
 from pathlib import Path
 
-from scripts.generate_sft_data import GENERATORS, build_split, validate
+from scripts.generate_sft_data import GENERATORS, V3_GENERATORS, build_split, validate
 from src.evaluation.evaluate_api import load_jsonl, validate_cases
 
 
@@ -26,6 +26,17 @@ class TrainingDataTests(unittest.TestCase):
         train_prompts = {row["prompt"][-1]["content"] for row in train}
         validation_prompts = {row["prompt"][-1]["content"] for row in validation}
         self.assertFalse(train_prompts & validation_prompts)
+
+    def test_v3_adds_targeted_failure_categories(self) -> None:
+        rows = build_split(len(V3_GENERATORS) * 10, seed=321, generators=V3_GENERATORS)
+        categories = Counter(row["category"] for row in rows)
+        for category in (
+            "预算显式比较",
+            "全部超预算",
+            "全部缺少必选属性",
+            "单项信息缺失",
+        ):
+            self.assertEqual(categories[category], 10)
 
 
 class EvaluationDataTests(unittest.TestCase):
