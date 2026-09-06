@@ -38,5 +38,6 @@ POST /v1/shopping-assistant
 
 - 已验证：Python接口、存活检查、请求日志、28项单元测试、35题困难集；
 - 已验证：Compose和Actions YAML可解析；
-- 未验证：当前Windows开发机没有Docker，尚未执行实际镜像构建；
+- 已验证：GitHub Actions生产镜像构建成功，Docker job耗时1分54秒；
+- 当前Windows开发机没有Docker，因此容器运行验证由GitHub Linux runner完成；
 - 未验证：LLM抽取回退尚未在真实1.5B模型上评测。
