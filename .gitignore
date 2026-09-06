@@ -8,6 +8,10 @@ outputs/evaluation/*
 !outputs/evaluation/baseline.summary.json
 !outputs/evaluation/sft.jsonl
 !outputs/evaluation/sft.summary.json
+!outputs/evaluation/exp001_extended.jsonl
+!outputs/evaluation/exp001_extended.summary.json
+!outputs/evaluation/exp002_extended.jsonl
+!outputs/evaluation/exp002_extended.summary.json
 checkpoints/
 wandb/
 .idea/
