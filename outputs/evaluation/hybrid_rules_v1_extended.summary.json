@@ -1,0 +1,44 @@
+{
+  "cases": 40,
+  "passed": 34,
+  "strict_accuracy": 0.85,
+  "rule_routed_cases": 11,
+  "rule_routed_passed": 11,
+  "by_category": {
+    "信息不足": {
+      "cases": 3,
+      "passed": 3,
+      "strict_accuracy": 1.0
+    },
+    "否定属性": {
+      "cases": 8,
+      "passed": 5,
+      "strict_accuracy": 0.625
+    },
+    "完整摘要": {
+      "cases": 7,
+      "passed": 7,
+      "strict_accuracy": 1.0
+    },
+    "必选属性": {
+      "cases": 2,
+      "passed": 1,
+      "strict_accuracy": 0.5
+    },
+    "数值筛选": {
+      "cases": 11,
+      "passed": 11,
+      "strict_accuracy": 1.0
+    },
+    "无合适商品": {
+      "cases": 3,
+      "passed": 3,
+      "strict_accuracy": 1.0
+    },
+    "预算约束": {
+      "cases": 6,
+      "passed": 4,
+      "strict_accuracy": 0.6667
+    }
+  }
+}

@@ -15,6 +15,7 @@
 | 数据质量对照实验 | 已完成 | 否定、数值筛选和摘要提升，但预算与拒答退化 |
 | 实验003恢复测试 | 已完成 | 21/40（52.5%），恢复拒答但总体低于实验002 |
 | 1.5B模型规模对照 | 已完成 | 基座18/40（45.0%），SFT后24/40（60.0%） |
+| 规则与模型协同 | 已完成第一版 | 11道数值题规则路由全通过，混合结果34/40（85.0%） |
 | QLoRA/SFT首轮训练 | 已完成 | RTX 3090训练约11分13秒，Adapter已保存 |
 | SFT固定业务评测 | 已完成 | 严格准确率4/8（50%），较基座提升25个百分点 |
 | DPO偏好对齐 | 未开始 | 后续阶段 |
@@ -27,6 +28,7 @@
 实验003结果见[实验003报告](docs/experiment_003_qlora.md)。
 1.5B模型规模对照见[实验004计划](docs/experiment_004_plan.md)。
 实验004的完整结果、分类变化和局限性见[实验004报告](docs/experiment_004_qlora.md)。
+规则与模型协同的设计、评测口径和边界见[实验005报告](docs/experiment_005_hybrid_rules.md)。
 
 ## 当前可运行服务
 
@@ -66,6 +68,7 @@ powershell -ExecutionPolicy Bypass -File scripts\smoke_test.ps1
 
 - `GET /health`：模型状态、设备与加载错误。
 - `POST /v1/chat/completions`：聊天生成，返回token用量和耗时。
+- `POST /v1/rule-recommendations`：接收结构化商品、硬约束和排序字段，返回可审计的确定性决策。
 
 若后续已有LoRA Adapter，可设置 `ADAPTER_PATH` 后复用同一服务。
 
@@ -107,6 +110,16 @@ powershell -ExecutionPolicy Bypass -File scripts\train_qlora.ps1
 3. 根据错误分析清洗或补充训练数据，保持参数不变完成数据对照实验。（实验002已完成）
 4. 构造chosen/rejected偏好数据，增加DPO训练并与SFT结果对比。
 5. 最后根据业务需要增加商品知识检索或购物Agent，不把RAG与后训练效果混为一谈。
+
+### 运行规则与模型协同评测
+
+实验005复用实验004保存的1.5B模型输出，并将11道数值筛选题路由到确定性规则引擎：
+
+```powershell
+python scripts\evaluate_hybrid.py
+```
+
+这一步不加载大模型、不需要GPU。当前输入是已结构化JSON；自然语言约束提取属于下一阶段，不能将85.0%直接解释为端到端线上准确率。
 
 ## 上传GitHub前
 

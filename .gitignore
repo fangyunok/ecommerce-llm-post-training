@@ -18,6 +18,8 @@ outputs/evaluation/*
 !outputs/evaluation/base_1_5b_extended.summary.json
 !outputs/evaluation/sft_1_5b_v2_extended.jsonl
 !outputs/evaluation/sft_1_5b_v2_extended.summary.json
+!outputs/evaluation/hybrid_rules_v1_extended.jsonl
+!outputs/evaluation/hybrid_rules_v1_extended.summary.json
 checkpoints/
 wandb/
 .idea/

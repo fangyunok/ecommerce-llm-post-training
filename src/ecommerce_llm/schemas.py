@@ -45,3 +45,32 @@ class HealthResponse(BaseModel):
     detail: str | None = None
 
 
+class RuleProduct(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+    values: dict[str, float] = Field(default_factory=dict)
+    display: dict[str, str] = Field(default_factory=dict)
+
+
+class RuleConstraint(BaseModel):
+    field: str = Field(min_length=1, max_length=100)
+    operator: Literal["le", "lt", "ge", "gt", "eq"]
+    value: float
+
+
+class RuleSort(BaseModel):
+    field: str = Field(min_length=1, max_length=100)
+    direction: Literal["asc", "desc"]
+
+
+class RuleRecommendationRequest(BaseModel):
+    products: list[RuleProduct] = Field(min_length=1, max_length=100)
+    constraints: list[RuleConstraint] = Field(default_factory=list, max_length=20)
+    sort: RuleSort
+    reason_fields: list[str] = Field(default_factory=list, max_length=20)
+
+
+class RuleRecommendationResponse(BaseModel):
+    selected_product: str | None
+    eligible_products: list[str]
+    answer: str
+    decision_source: Literal["deterministic_rules"] = "deterministic_rules"

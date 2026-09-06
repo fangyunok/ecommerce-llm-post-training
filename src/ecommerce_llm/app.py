@@ -8,7 +8,14 @@ from fastapi.responses import RedirectResponse
 
 from .config import settings
 from .model_service import ModelService
-from .schemas import ChatRequest, ChatResponse, HealthResponse
+from .recommendation_engine import recommend_by_rules
+from .schemas import (
+    ChatRequest,
+    ChatResponse,
+    HealthResponse,
+    RuleRecommendationRequest,
+    RuleRecommendationResponse,
+)
 
 
 logging.basicConfig(
@@ -59,3 +66,7 @@ def chat(request: ChatRequest) -> ChatResponse:
         raise HTTPException(status_code=500, detail=f"模型推理失败：{exc}") from exc
 
 
+@app.post("/v1/rule-recommendations", response_model=RuleRecommendationResponse)
+def rule_recommendations(request: RuleRecommendationRequest) -> RuleRecommendationResponse:
+    """使用确定性硬约束和排序生成可审计的商品决策。"""
+    return recommend_by_rules(request)
