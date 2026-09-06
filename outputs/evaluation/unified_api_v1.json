@@ -1,0 +1,126 @@
+{
+  "cases": 3,
+  "passed": 3,
+  "results": [
+    {
+      "id": "rules",
+      "passed": true,
+      "status_code": 200,
+      "response": {
+        "answer": "推荐B款。售价90元。",
+        "route": "deterministic_rules",
+        "extraction": {
+          "products": [
+            {
+              "name": "A款",
+              "values": {
+                "price": 100.0
+              },
+              "display": {
+                "price": "售价100元"
+              }
+            },
+            {
+              "name": "B款",
+              "values": {
+                "price": 90.0
+              },
+              "display": {
+                "price": "售价90元"
+              }
+            }
+          ],
+          "constraints": [],
+          "sort": {
+            "field": "price",
+            "direction": "asc"
+          },
+          "tie_breakers": [],
+          "reason_fields": [
+            "price"
+          ]
+        },
+        "recommendation": {
+          "selected_product": "B款",
+          "eligible_products": [
+            "A款",
+            "B款"
+          ],
+          "answer": "推荐B款。售价90元。",
+          "decision_source": "deterministic_rules"
+        },
+        "usage": null
+      }
+    },
+    {
+      "id": "fallback",
+      "passed": true,
+      "status_code": 200,
+      "response": {
+        "answer": "推荐长风版。",
+        "route": "llm_extraction_rules",
+        "extraction": {
+          "products": [
+            {
+              "name": "轻羽版",
+              "values": {
+                "battery_capacity": 10000.0,
+                "price": 99.0
+              },
+              "display": {}
+            },
+            {
+              "name": "长风版",
+              "values": {
+                "battery_capacity": 20000.0,
+                "price": 169.0
+              },
+              "display": {}
+            }
+          ],
+          "constraints": [
+            {
+              "field": "battery_capacity",
+              "operator": "ge",
+              "value": 15000.0
+            }
+          ],
+          "sort": {
+            "field": "price",
+            "direction": "asc"
+          },
+          "tie_breakers": [],
+          "reason_fields": [
+            "battery_capacity",
+            "price"
+          ]
+        },
+        "recommendation": {
+          "selected_product": "长风版",
+          "eligible_products": [
+            "长风版"
+          ],
+          "answer": "推荐长风版。",
+          "decision_source": "deterministic_rules"
+        },
+        "usage": null
+      }
+    },
+    {
+      "id": "chat",
+      "passed": true,
+      "status_code": 200,
+      "response": {
+        "answer": "预算是指在购买商品时设定的金额范围，用于控制支出和选择合适价格的商品。",
+        "route": "language_model",
+        "extraction": null,
+        "recommendation": null,
+        "usage": {
+          "prompt_tokens": 47,
+          "completion_tokens": 21,
+          "total_tokens": 68
+        }
+      }
+    }
+  ]
+}
