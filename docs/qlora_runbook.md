@@ -34,6 +34,22 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements-training.txt
 ```
 
+AutoDL已验证配置：单张RTX 3090 24GB，PyTorch 2.5.1、Python 3.12、CUDA 12.4。为复用镜像自带的GPU版PyTorch，可创建继承系统包的环境，并只补齐项目依赖：
+
+```bash
+python -m venv --system-site-packages .venv-train
+source .venv-train/bin/activate
+python -m pip install --index-url https://pypi.tuna.tsinghua.edu.cn/simple \
+  -r requirements-training.txt
+```
+
+模型与依赖缓存应放到数据盘，避免占满系统盘：
+
+```bash
+export HF_HOME=/root/autodl-tmp/huggingface
+export HF_ENDPOINT=https://hf-mirror.com
+```
+
 先执行体检，再训练：
 
 ```bash
@@ -61,6 +77,16 @@ python -m src.training.train_qlora \
 
 训练输出是LoRA Adapter，默认保存至`outputs/sft_adapter`。
 
+## 首轮实验结果
+
+- GPU：RTX 3090 24GB；
+- 训练：3 epochs、225 optimizer steps、约11分13秒；
+- 峰值显存：约2GB；
+- 最终验证loss：0.000131；
+- 固定业务评测：基座2/8（25%），SFT后4/8（50%）。
+
+验证loss极低主要反映合成数据模板规律强，不代表真实业务准确率。下一轮优先增加语言表达、属性顺序、否定表达和数值字段的多样性，再保持训练参数不变进行数据对照实验。
+
 ## 微调后部署与对比
 
 将Adapter复制回部署机器，启动：
@@ -78,4 +104,3 @@ python -m src.evaluation.evaluate_api `
 ```
 
 必须同时保留`baseline.jsonl`和`sft.jsonl`，比较严格准确率、各类别错误、输出长度和延迟。
-

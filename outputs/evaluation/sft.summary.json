@@ -1,0 +1,9 @@
+{
+  "cases": 8,
+  "passed": 4,
+  "strict_accuracy": 0.5,
+  "mean_latency_seconds": 1.572,
+  "completion_tokens": 352,
+  "result_file": "outputs/evaluation/sft.jsonl",
+  "summary_file": "outputs/evaluation/sft.summary.json"
+}

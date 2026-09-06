@@ -6,6 +6,8 @@ outputs/*
 outputs/evaluation/*
 !outputs/evaluation/baseline.jsonl
 !outputs/evaluation/baseline.summary.json
+!outputs/evaluation/sft.jsonl
+!outputs/evaluation/sft.summary.json
 checkpoints/
 wandb/
 .idea/
@@ -14,4 +16,3 @@ wandb/
 .pytest_cache/
 .cache/
 models/
-

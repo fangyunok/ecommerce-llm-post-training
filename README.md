@@ -11,11 +11,12 @@
 | 本地CPU推理API | 已完成 | FastAPI健康检查与聊天接口可用 |
 | 固定业务评测 | 已完成 | 基座严格准确率2/8（25%） |
 | 合成SFT数据 | 已完成 | 1200条训练、150条验证 |
-| QLoRA训练代码 | 已完成，待GPU执行 | 本机无CUDA，尚无Adapter和微调后指标 |
+| QLoRA/SFT首轮训练 | 已完成 | RTX 3090训练约11分13秒，Adapter已保存 |
+| SFT固定业务评测 | 已完成 | 严格准确率4/8（50%），较基座提升25个百分点 |
 | DPO偏好对齐 | 未开始 | 后续阶段 |
 | RAG与购物Agent | 未开始 | 后续阶段 |
 
-> 当前仓库不能声称已经完成模型微调；已完成的是可运行的基座部署、评测闭环和GPU训练入口。
+> 首轮结果证明训练与部署闭环可运行，但8条固定评测集规模较小，合成训练集模板规律较强；50%不能解释为真实线上业务准确率。
 
 ## 当前可运行服务
 
@@ -68,7 +69,7 @@ powershell -ExecutionPolicy Bypass -File scripts\evaluate_baseline.ps1
 
 评测结果保存到 `outputs/evaluation/baseline.jsonl`，后续微调模型使用同一评测集对比。
 
-当前基座评测结果：`2/8`严格通过，准确率`25%`。
+当前基座评测结果：`2/8`严格通过，准确率`25%`。首轮SFT后为`4/8`，准确率`50%`。完整记录见[首轮QLoRA实验报告](docs/experiment_001_qlora.md)。
 
 ### 生成SFT数据
 
@@ -85,7 +86,7 @@ python -m pip install -r requirements-training.txt
 powershell -ExecutionPolicy Bypass -File scripts\train_qlora.ps1
 ```
 
-本机没有CUDA，训练命令应在Colab、AutoDL或实验室GPU服务器执行。训练完成后将`outputs/sft_adapter`作为`ADAPTER_PATH`接入现有API。
+本机没有CUDA，训练命令应在Colab、AutoDL或实验室GPU服务器执行。首轮实验已在AutoDL RTX 3090上完成；训练完成后可将`outputs/sft_adapter`作为`ADAPTER_PATH`接入现有API。
 
 训练前先阅读并执行[QLoRA运行手册](docs/qlora_runbook.md)中的环境体检与参数检查。
 
