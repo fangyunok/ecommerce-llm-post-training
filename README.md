@@ -89,15 +89,13 @@ powershell -ExecutionPolicy Bypass -File scripts\train_qlora.ps1
 
 训练前先阅读并执行[QLoRA运行手册](docs/qlora_runbook.md)中的环境体检与参数检查。
 
-## 学习路线
+## 后续实验路线
 
-1. **数据与语言模型基础**：token、因果语言模型、聊天模板、SFT 数据格式。
-2. **Transformer 最小原理**：Embedding、Self-Attention、因果掩码、前馈网络。
-3. **基座模型评测**：建立训练前 baseline，确定业务指标。
-4. **LoRA 与 QLoRA**：先理解低秩更新，再进行监督微调。
-5. **SFT 实验**：记录超参数、训练曲线、显存与效果。
-6. **DPO 偏好对齐**：构造 chosen/rejected 数据并完成对比实验。
-7. **项目交付**：自动评测、错误分析、Gradio/FastAPI 演示和简历材料。
+1. 在NVIDIA GPU环境完成首轮QLoRA/SFT训练，保存Adapter、训练日志和超参数。
+2. 使用固定评测集对比基座模型与SFT模型，报告严格准确率、延迟和失败案例。
+3. 根据错误分析清洗或补充训练数据，进行至少一轮可解释的参数对照实验。
+4. 构造chosen/rejected偏好数据，增加DPO训练并与SFT结果对比。
+5. 最后根据业务需要增加商品知识检索或购物Agent，不把RAG与后训练效果混为一谈。
 
 ## 上传GitHub前
 
@@ -112,48 +110,18 @@ python -m pip check
 
 本项目暂未选择开源许可证；公开仓库可以展示和阅读，但如需明确允许他人复制、修改或再发布，应由仓库所有者选择并添加LICENSE。
 
-当前进度：**第 3 课——Self-Attention 与因果掩码**。
-
-## 第 1 课运行方式
-
-```powershell
-python lessons/lesson01_data_anatomy.py
-```
-
-你应当观察三件事：
-
-- 一条样本由哪些角色组成；
-- 训练文本和推理提示为什么不一样；
-- 为什么数据格式错误会直接影响训练质量。
-
-## 第 2 课运行方式
-
-```powershell
-python lessons/lesson02_next_token.py
-```
-
-本课使用一个字符级极简模型展示完整链路。真实大模型的 tokenizer 和网络结构复杂得多，但监督信号仍然来自“将标签相对输入错开一位”。
-
-## 第 3 课运行方式
-
-```powershell
-python lessons/lesson03_self_attention.py
-```
-
-本课从零实现单头 Self-Attention，观察 Q/K/V、缩放点积、Softmax 和因果掩码如何让同一个 token 在不同上下文中得到不同表示。
-
 ## 项目目录
 
 ```text
 data/
-  raw/          原始数据
   processed/    清洗、划分后的训练数据
-lessons/        每一课的可运行练习
-src/            后续加入正式训练、评测和推理代码
-tests/          数据与代码测试
+  eval/         固定业务评测集
+src/            训练、评测和推理服务代码
+scripts/        数据生成、训练、评测和部署脚本
+tests/          单元测试
+docs/           部署与QLoRA运行文档
 ```
 
 ## 硬件约定
 
 本机负责开发和小规模验证；QLoRA/DPO 正式训练使用 NVIDIA GPU 环境。代码会保持同一套目录和配置，避免在本机与云端之间反复修改。
-
