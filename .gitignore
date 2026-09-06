@@ -24,6 +24,8 @@ outputs/evaluation/*
 !outputs/evaluation/extraction_v1.summary.json
 !outputs/evaluation/robustness_v1.jsonl
 !outputs/evaluation/robustness_v1.summary.json
+!outputs/evaluation/llm_fallback_v1.jsonl
+!outputs/evaluation/llm_fallback_v1.summary.json
 checkpoints/
 wandb/
 .idea/

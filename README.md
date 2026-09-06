@@ -128,6 +128,7 @@ powershell -ExecutionPolicy Bypass -File scripts\train_qlora.ps1
 ```powershell
 python scripts\evaluate_hybrid.py
 python scripts\evaluate_extraction.py
+python scripts\evaluate_llm_fallback.py
 ```
 
 这两项评测都不加载大模型、不需要GPU。85.0%的混合结果使用已结构化JSON；实验006另行验证了受支持自然语言的自动抽取，但其表达范围仍有限，不能将结果直接解释为开放域线上准确率。
