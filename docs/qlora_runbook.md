@@ -17,11 +17,13 @@ python scripts/preflight_training.py --model /path/to/Qwen2.5-0.5B-Instruct
 
 默认得到：
 
-- `data/processed/sft_train.jsonl`：1200条；
-- `data/processed/sft_validation.jsonl`：150条；
-- 五类任务均衡分布。
+- `data/processed/sft_train.jsonl`：1800条；
+- `data/processed/sft_validation.jsonl`：225条；
+- 九类任务均衡分布。
 
 当前数据是可复现的合成启动数据，用于验证训练闭环。正式求职版本需要人工抽检，并补充更自然、多样、接近真实业务分布的数据。
+
+实验002使用`data/eval/ecommerce_eval_v2.jsonl`的40条人工评测题。该文件保留原8题，并增加预算边界、否定属性、数值筛选和完整摘要题；不得将这些题目或答案复制到训练集。
 
 ## GPU环境
 

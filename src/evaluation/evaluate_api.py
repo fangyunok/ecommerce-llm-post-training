@@ -4,6 +4,7 @@ import argparse
 import json
 import statistics
 import sys
+from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -27,7 +28,35 @@ class CheckResult:
 
 def load_jsonl(path: Path) -> list[dict]:
     with path.open("r", encoding="utf-8") as file:
-        return [json.loads(line) for line in file if line.strip()]
+        rows = [json.loads(line) for line in file if line.strip()]
+    validate_cases(rows)
+    return rows
+
+
+def validate_cases(cases: list[dict]) -> None:
+    if not cases:
+        raise ValueError("评测集不能为空")
+    ids: set[str] = set()
+    for index, case in enumerate(cases, start=1):
+        case_id = case.get("id")
+        if not isinstance(case_id, str) or not case_id.strip():
+            raise ValueError(f"第{index}条评测缺少有效id")
+        if case_id in ids:
+            raise ValueError(f"评测id重复：{case_id}")
+        ids.add(case_id)
+        if not case.get("category"):
+            raise ValueError(f"{case_id}缺少category")
+        messages = case.get("messages")
+        if not isinstance(messages, list) or not any(
+            message.get("role") == "user" for message in messages
+        ):
+            raise ValueError(f"{case_id}缺少user消息")
+        checks = case.get("checks")
+        if not isinstance(checks, dict):
+            raise ValueError(f"{case_id}缺少checks")
+        for key in ("all_of", "any_of", "none_of"):
+            if not isinstance(checks.get(key, []), list):
+                raise ValueError(f"{case_id}的{key}必须是列表")
 
 
 def normalized(text: str) -> str:
@@ -111,6 +140,20 @@ def main() -> None:
     total_completion_tokens = sum(
         result["usage"]["completion_tokens"] for result in results
     )
+    category_stats: dict[str, dict[str, int]] = defaultdict(
+        lambda: {"cases": 0, "passed": 0}
+    )
+    for result in results:
+        stats = category_stats[result["category"]]
+        stats["cases"] += 1
+        stats["passed"] += int(result["passed"])
+    by_category = {
+        category: {
+            **stats,
+            "strict_accuracy": round(stats["passed"] / stats["cases"], 4),
+        }
+        for category, stats in sorted(category_stats.items())
+    }
     try:
         display_result_file = str(args.output.resolve().relative_to(PROJECT_ROOT))
     except ValueError:
@@ -122,6 +165,7 @@ def main() -> None:
         "mean_latency_seconds": round(statistics.mean(latencies), 3),
         "completion_tokens": total_completion_tokens,
         "result_file": display_result_file,
+        "by_category": by_category,
     }
     summary_path = args.output.with_suffix(".summary.json")
     try:
@@ -136,4 +180,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

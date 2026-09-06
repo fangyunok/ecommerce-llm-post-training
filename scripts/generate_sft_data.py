@@ -16,8 +16,12 @@ SYSTEM_PROMPT = (
     "你是一个严谨的电商导购助手。只依据给定商品信息回答，逐项核对用户的硬性要求；"
     "信息不足时明确说明，不编造商品参数。"
 )
-PREFIXES = ["星云", "远山", "清风", "青禾", "极光", "云帆", "松影", "晨曦"]
+PREFIXES = [
+    "星云", "远山", "清风", "青禾", "极光", "云帆", "松影", "晨曦",
+    "银杉", "海盐", "月川", "栖木",
+]
 FEATURES = ["主动降噪", "防水", "Wi-Fi 6", "快充", "高度可调", "蓝牙5.3"]
+NEGATIONS = ["不支持{feature}", "没有{feature}", "不具备{feature}"]
 
 
 def wrap(user: str, assistant: str, category: str) -> dict:
@@ -41,7 +45,7 @@ def budget_priority(rng: random.Random) -> dict:
     a, b = product_names(rng)
     budget = rng.randrange(180, 501, 10)
     affordable_price = rng.randrange(100, budget + 1, 10)
-    expensive_price = budget + rng.randrange(20, 151, 10)
+    expensive_price = budget + rng.randrange(1, 121)
     good_value = rng.randrange(35, 61, 5)
     weak_value = rng.randrange(10, good_value, 5)
     if rng.random() < 0.5:
@@ -51,11 +55,19 @@ def budget_priority(rng: random.Random) -> dict:
         rows = [(a, affordable_price, good_value), (b, expensive_price, weak_value)]
         chosen = a
     chosen_row = next(row for row in rows if row[0] == chosen)
-    user = (
-        f"商品信息：{rows[0][0]}售价{rows[0][1]}元、续航{rows[0][2]}小时；"
-        f"{rows[1][0]}售价{rows[1][1]}元、续航{rows[1][2]}小时。"
-        f"用户预算{budget}元，并优先选择续航更长的商品。请推荐并说明理由。"
-    )
+    templates = [
+        (
+            f"商品信息：{rows[0][0]}售价{rows[0][1]}元、续航{rows[0][2]}小时；"
+            f"{rows[1][0]}售价{rows[1][1]}元、续航{rows[1][2]}小时。"
+            f"用户预算不超过{budget}元，在预算内优先选续航更长的。请推荐。"
+        ),
+        (
+            f"候选商品：{rows[1][0]}续航{rows[1][2]}小时，价格{rows[1][1]}元；"
+            f"{rows[0][0]}续航{rows[0][2]}小时，价格{rows[0][1]}元。"
+            f"最多能花{budget}元，先排除超预算商品，再比较续航。应该选哪款？"
+        ),
+    ]
+    user = rng.choice(templates)
     answer = (
         f"推荐{chosen}。它售价{chosen_row[1]}元，符合{budget}元预算，"
         f"续航{chosen_row[2]}小时，是预算内续航更长的选择。"
@@ -72,9 +84,10 @@ def required_feature(rng: random.Random) -> dict:
         supported, unsupported = a, b
     else:
         supported, unsupported = b, a
+    unsupported_text = rng.choice(NEGATIONS).format(feature=feature)
     descriptions = {
         supported: f"支持{feature}",
-        unsupported: f"不支持{feature}",
+        unsupported: unsupported_text,
     }
     prices = {a: a_price, b: b_price}
     user = (
@@ -129,9 +142,16 @@ def fact_summary(rng: random.Random) -> dict:
     material = rng.choice(["304不锈钢", "316不锈钢", "陶瓷内胆"])
     hours = rng.choice([6, 8, 10, 12, 16])
     price = rng.randrange(59, 200, 10)
+    facts = [
+        f"容量{capacity}ml",
+        material,
+        f"保温{hours}小时",
+        f"售价{price}元",
+    ]
+    rng.shuffle(facts)
     user = (
-        f"商品信息：{item}，容量{capacity}ml，{material}，保温{hours}小时，"
-        f"售价{price}元。请完整概括核心信息，不添加资料中没有的内容。"
+        f"商品信息：{item}，{'，'.join(facts)}。"
+        "请完整概括名称、容量、材质、保温时间和价格，不添加未知卖点。"
     )
     answer = (
         f"{item}容量为{capacity}ml，采用{material}，可保温{hours}小时，售价{price}元。"
@@ -139,10 +159,106 @@ def fact_summary(rng: random.Random) -> dict:
     return wrap(user, answer, "事实摘要")
 
 
+def budget_boundary(rng: random.Random) -> dict:
+    """训练等于预算可选、高于预算即淘汰的边界关系。"""
+    a, b = product_names(rng)
+    budget = rng.randrange(150, 501, 10)
+    eligible_price = budget
+    over_price = budget + rng.choice([1, 5, 10])
+    eligible_score = rng.randrange(60, 86, 5)
+    over_score = rng.randrange(eligible_score + 5, 101, 5)
+    if rng.random() < 0.5:
+        rows = [(a, eligible_price, eligible_score), (b, over_price, over_score)]
+        chosen, rejected = a, b
+    else:
+        rows = [(a, over_price, over_score), (b, eligible_price, eligible_score)]
+        chosen, rejected = b, a
+    user = (
+        f"{rows[0][0]}价格{rows[0][1]}元、评分{rows[0][2]}分；"
+        f"{rows[1][0]}价格{rows[1][1]}元、评分{rows[1][2]}分。"
+        f"预算上限是{budget}元，不能超支，在可买商品中选择评分更高的。请推荐。"
+    )
+    answer = (
+        f"推荐{chosen}。它售价{eligible_price}元，等于{budget}元预算上限，可以购买；"
+        f"{rejected}售价{over_price}元，高于预算，虽然评分更高也应排除。"
+    )
+    return wrap(user, answer, "预算边界")
+
+
+def negative_attribute(rng: random.Random) -> dict:
+    """强化不可、不支持、没有等否定信息。"""
+    item = f"{rng.choice(PREFIXES)}{rng.randint(10, 99)}款"
+    price = rng.randrange(99, 401, 10)
+    budget = price + rng.randrange(10, 101, 10)
+    feature = rng.choice(FEATURES)
+    negative = rng.choice(NEGATIONS).format(feature=feature)
+    user = (
+        f"商品资料：{item}售价{price}元，{negative}。用户预算{budget}元，"
+        f"并把{feature}作为必须满足的条件。这款商品合适吗？"
+    )
+    answer = (
+        f"不合适。虽然{item}售价{price}元，没有超过{budget}元预算，但它{negative}，"
+        f"不满足必须具备{feature}的硬性要求，因此不推荐。"
+    )
+    return wrap(user, answer, "否定属性判断")
+
+
+def three_product_sort(rng: random.Random) -> dict:
+    """让价格和容量保持绑定，再在满足容量的商品中选最低价。"""
+    suffix = rng.randint(10, 99)
+    names = [f"{name}{suffix}款" for name in rng.sample(PREFIXES, 3)]
+    min_capacity = rng.choice([10000, 15000, 20000])
+    eligible_capacity = [min_capacity, min_capacity + 5000]
+    cheap_price = rng.randrange(79, 150, 10)
+    expensive_price = cheap_price + rng.randrange(20, 101, 10)
+    ineligible_price = max(39, cheap_price - rng.randrange(10, 41, 10))
+    rows = [
+        (names[0], expensive_price, eligible_capacity[1]),
+        (names[1], ineligible_price, min_capacity - 5000),
+        (names[2], cheap_price, eligible_capacity[0]),
+    ]
+    rng.shuffle(rows)
+    user = (
+        "三款充电宝："
+        + "；".join(f"{name}售价{price}元、容量{capacity}mAh" for name, price, capacity in rows)
+        + f"。容量必须达到{min_capacity}mAh，在合格商品中选择价格最低的。请推荐。"
+    )
+    answer = (
+        f"推荐{names[2]}，售价{cheap_price}元、容量{min_capacity}mAh。"
+        f"它达到容量要求，并且比另一款合格商品的{expensive_price}元更便宜；"
+        f"{names[1]}虽便宜但容量不足。"
+    )
+    return wrap(user, answer, "多商品数值筛选")
+
+
+def all_affordable_sort(rng: random.Random) -> dict:
+    a, b = product_names(rng)
+    budget = rng.randrange(300, 601, 10)
+    a_price = rng.randrange(100, budget - 20, 10)
+    b_price = rng.randrange(100, budget - 20, 10)
+    a_value, b_value = rng.sample(range(20, 61, 5), 2)
+    chosen = a if a_value > b_value else b
+    chosen_price = a_price if chosen == a else b_price
+    chosen_value = max(a_value, b_value)
+    user = (
+        f"{a}售价{a_price}元、续航{a_value}小时；{b}售价{b_price}元、续航{b_value}小时。"
+        f"两款都不超过{budget}元预算，请选择续航更长的一款。"
+    )
+    answer = (
+        f"推荐{chosen}。两款价格都在{budget}元预算内，{chosen}售价{chosen_price}元，"
+        f"续航{chosen_value}小时，是续航更长的选择。"
+    )
+    return wrap(user, answer, "预算内排序")
+
+
 GENERATORS: list[Callable[[random.Random], dict]] = [
     budget_priority,
+    budget_boundary,
+    all_affordable_sort,
     required_feature,
+    negative_attribute,
     no_match,
+    three_product_sort,
     insufficient_info,
     fact_summary,
 ]
@@ -163,16 +279,20 @@ def write_jsonl(path: Path, rows: list[dict]) -> None:
 
 
 def validate(rows: list[dict]) -> None:
+    seen_prompts: set[str] = set()
     for index, row in enumerate(rows):
         assert row["prompt"][-1]["role"] == "user", index
         assert row["completion"][0]["role"] == "assistant", index
         assert row["completion"][0]["content"].strip(), index
+        prompt = row["prompt"][-1]["content"]
+        assert prompt not in seen_prompts, f"重复prompt: {index}"
+        seen_prompts.add(prompt)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--train-size", type=int, default=1200)
-    parser.add_argument("--validation-size", type=int, default=150)
+    parser.add_argument("--train-size", type=int, default=1800)
+    parser.add_argument("--validation-size", type=int, default=225)
     parser.add_argument("--seed", type=int, default=20260906)
     args = parser.parse_args()
 
@@ -192,4 +312,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

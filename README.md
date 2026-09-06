@@ -10,7 +10,8 @@
 |---|---|---|
 | 本地CPU推理API | 已完成 | FastAPI健康检查与聊天接口可用 |
 | 固定业务评测 | 已完成 | 基座严格准确率2/8（25%） |
-| 合成SFT数据 | 已完成 | 1200条训练、150条验证 |
+| SFT数据v2 | 已完成 | 1800条训练、225条验证，9类均衡分布 |
+| 扩展业务评测 | 已完成，待GPU运行 | 40条人工题，包含原8题以保持纵向对比 |
 | QLoRA/SFT首轮训练 | 已完成 | RTX 3090训练约11分13秒，Adapter已保存 |
 | SFT固定业务评测 | 已完成 | 严格准确率4/8（50%），较基座提升25个百分点 |
 | DPO偏好对齐 | 未开始 | 后续阶段 |
@@ -77,7 +78,7 @@ powershell -ExecutionPolicy Bypass -File scripts\evaluate_baseline.ps1
 python scripts\generate_sft_data.py
 ```
 
-默认生成1200条训练数据和150条验证数据，格式为对话式prompt/completion。
+默认生成1800条训练数据和225条验证数据，格式为对话式prompt/completion。v2重点增加预算边界、否定属性、数值字段绑定和多商品筛选。
 
 ### 在NVIDIA GPU环境进行QLoRA
 
@@ -93,8 +94,8 @@ powershell -ExecutionPolicy Bypass -File scripts\train_qlora.ps1
 ## 后续实验路线
 
 1. 在NVIDIA GPU环境完成首轮QLoRA/SFT训练，保存Adapter、训练日志和超参数。
-2. 使用固定评测集对比基座模型与SFT模型，报告严格准确率、延迟和失败案例。
-3. 根据错误分析清洗或补充训练数据，进行至少一轮可解释的参数对照实验。
+2. 使用固定评测集对比基座模型与SFT模型，报告严格准确率、延迟和失败案例。（已完成实验001）
+3. 根据错误分析清洗或补充训练数据，保持参数不变完成数据对照实验。（实验002待运行）
 4. 构造chosen/rejected偏好数据，增加DPO训练并与SFT结果对比。
 5. 最后根据业务需要增加商品知识检索或购物Agent，不把RAG与后训练效果混为一谈。
 
