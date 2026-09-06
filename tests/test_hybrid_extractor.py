@@ -1,6 +1,6 @@
 import unittest
 
-from src.ecommerce_llm.hybrid_extractor import HybridConstraintExtractor, parse_json_object
+from src.ecommerce_llm.hybrid_extractor import HybridConstraintExtractor, ground_constraint_operators, normalize_numeric_values, parse_json_object
 from src.ecommerce_llm.schemas import ChatMessage, ChatResponse, Usage
 
 
@@ -36,6 +36,18 @@ class HybridExtractorTests(unittest.TestCase):
 
     def test_json_can_be_surrounded_by_text(self):
         self.assertEqual(parse_json_object('结果：{"a":1} 完成'), {"a": 1})
+
+    def test_common_units_are_normalized_before_schema_validation(self):
+        payload = {"products": [{"name": "A", "values": {"camera": "64MP", "weight": "1.4kg"}}],
+                   "constraints": [{"field": "camera", "operator": "ge", "value": "48MP"}]}
+        normalized = normalize_numeric_values(payload)
+        self.assertEqual(normalized["products"][0]["values"], {"camera": 64.0, "weight": 1.4})
+        self.assertEqual(normalized["constraints"][0]["value"], 48.0)
+
+    def test_explicit_source_phrase_grounds_operator(self):
+        payload = {"constraints": [{"field": "weight", "operator": "ge", "value": 1.5}]}
+        grounded = ground_constraint_operators("绝不能重于1.5kg", payload)
+        self.assertEqual(grounded["constraints"][0]["operator"], "le")
 
 
 if __name__ == "__main__":

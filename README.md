@@ -21,6 +21,7 @@
 | 规则优先与LLM回退 | 已完成代码与模拟验证 | 规则成功零模型调用，Schema失败封闭；待GPU真实模型验证 |
 | 统一购物助手接口 | 已完成 | `/v1/shopping-assistant`统一决策、抽取回退与语言任务 |
 | Docker与CI | 已完成并验证 | GitHub Actions单测与生产镜像构建成功，总耗时2分13秒 |
+| 真实1.5B抽取回退 | 已完成 | 首轮3/5，加入单位归一化与原文约束校验后5/5；统一接口3/3 |
 | QLoRA/SFT首轮训练 | 已完成 | RTX 3090训练约11分13秒，Adapter已保存 |
 | SFT固定业务评测 | 已完成 | 严格准确率4/8（50%），较基座提升25个百分点 |
 | DPO偏好对齐 | 未开始 | 后续阶段 |
@@ -36,6 +37,7 @@
 规则与模型协同的设计、评测口径和边界见[实验005报告](docs/experiment_005_hybrid_rules.md)。
 自然语言结构化抽取的实现与泛化测试见[实验006报告](docs/experiment_006_extraction.md)。
 困难集、单位归一化和多级排序结果见[实验007报告](docs/experiment_007_robustness.md)。
+真实1.5B模型抽取回退及统一接口验收见[实验008报告](docs/experiment_008_llm_fallback.md)。
 最终系统架构见[架构说明](docs/architecture.md)，部署步骤见[生产部署手册](docs/production_deployment.md)，求职讲解见[简历与面试材料](docs/interview_materials.md)。
 
 ## 当前可运行服务
