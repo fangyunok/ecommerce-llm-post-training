@@ -14,6 +14,10 @@ outputs/evaluation/*
 !outputs/evaluation/exp002_extended.summary.json
 !outputs/evaluation/exp003_extended.jsonl
 !outputs/evaluation/exp003_extended.summary.json
+!outputs/evaluation/base_1_5b_extended.jsonl
+!outputs/evaluation/base_1_5b_extended.summary.json
+!outputs/evaluation/sft_1_5b_v2_extended.jsonl
+!outputs/evaluation/sft_1_5b_v2_extended.summary.json
 checkpoints/
 wandb/
 .idea/
@@ -22,3 +26,4 @@ wandb/
 .pytest_cache/
 .cache/
 models/
+experiment004_*.tar*
