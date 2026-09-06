@@ -26,6 +26,9 @@ class Settings:
     port: int = int(os.getenv("PORT", "8000"))
     preload_model: bool = _as_bool(os.getenv("PRELOAD_MODEL", "true"))
     max_input_tokens: int = int(os.getenv("MAX_INPUT_TOKENS", "2048"))
+    enable_llm_extraction_fallback: bool = _as_bool(
+        os.getenv("ENABLE_LLM_EXTRACTION_FALLBACK", "false")
+    )
     default_system_prompt: str = os.getenv(
         "SYSTEM_PROMPT",
         "你是一个严谨的电商导购助手。只依据用户提供的商品信息回答；"
@@ -34,4 +37,3 @@ class Settings:
 
 
 settings = Settings()
-

@@ -18,6 +18,9 @@
 | 规则与模型协同 | 已完成第一版 | 11道数值题规则路由全通过，混合结果34/40（85.0%） |
 | 自然语言约束抽取 | 已完成第一版 | 原题11/11、独立改写题5/5，字段与决策均全通过 |
 | 困难集与鲁棒性 | 已完成 | 35题、7类参数化困难集全部通过，19项测试通过 |
+| 规则优先与LLM回退 | 已完成代码与模拟验证 | 规则成功零模型调用，Schema失败封闭；待GPU真实模型验证 |
+| 统一购物助手接口 | 已完成 | `/v1/shopping-assistant`统一决策、抽取回退与语言任务 |
+| Docker与CI | 已完成配置 | Compose/CI语法通过；当前开发机无Docker，镜像构建待外部验证 |
 | QLoRA/SFT首轮训练 | 已完成 | RTX 3090训练约11分13秒，Adapter已保存 |
 | SFT固定业务评测 | 已完成 | 严格准确率4/8（50%），较基座提升25个百分点 |
 | DPO偏好对齐 | 未开始 | 后续阶段 |
@@ -33,6 +36,7 @@
 规则与模型协同的设计、评测口径和边界见[实验005报告](docs/experiment_005_hybrid_rules.md)。
 自然语言结构化抽取的实现与泛化测试见[实验006报告](docs/experiment_006_extraction.md)。
 困难集、单位归一化和多级排序结果见[实验007报告](docs/experiment_007_robustness.md)。
+最终系统架构见[架构说明](docs/architecture.md)，部署步骤见[生产部署手册](docs/production_deployment.md)，求职讲解见[简历与面试材料](docs/interview_materials.md)。
 
 ## 当前可运行服务
 
@@ -74,6 +78,7 @@ powershell -ExecutionPolicy Bypass -File scripts\smoke_test.ps1
 - `POST /v1/chat/completions`：聊天生成，返回token用量和耗时。
 - `POST /v1/rule-recommendations`：接收结构化商品、硬约束和排序字段，返回可审计的确定性决策。
 - `POST /v1/natural-language-recommendations`：将受支持的自然语言商品比较请求抽取成JSON，再调用规则引擎决策。
+- `POST /v1/shopping-assistant`：统一业务入口；支持`auto/decision/chat`模式并返回实际路由。
 
 若后续已有LoRA Adapter，可设置 `ADAPTER_PATH` 后复用同一服务。
 

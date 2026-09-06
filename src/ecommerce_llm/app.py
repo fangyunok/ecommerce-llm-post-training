@@ -1,15 +1,18 @@
 from __future__ import annotations
 
 import logging
+import time
+import uuid
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
 
 from .config import settings
-from .constraint_extractor import extract_rule_request
+from .hybrid_extractor import HybridConstraintExtractor
 from .model_service import ModelService
 from .recommendation_engine import recommend_by_rules
+from .shopping_assistant import ShoppingAssistantService
 from .schemas import (
     ChatRequest,
     ChatResponse,
@@ -18,6 +21,8 @@ from .schemas import (
     RuleRecommendationResponse,
     NaturalLanguageRecommendationRequest,
     NaturalLanguageRecommendationResponse,
+    ShoppingAssistantRequest,
+    ShoppingAssistantResponse,
 )
 
 
@@ -26,6 +31,8 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s - %(message)s",
 )
 model_service = ModelService(settings)
+hybrid_extractor = HybridConstraintExtractor(model_service, settings.enable_llm_extraction_fallback)
+shopping_service = ShoppingAssistantService(hybrid_extractor, model_service)
 
 
 @asynccontextmanager
@@ -43,9 +50,29 @@ app = FastAPI(
 )
 
 
+@app.middleware("http")
+async def request_logging(request, call_next):
+    request_id = request.headers.get("X-Request-ID") or uuid.uuid4().hex
+    started = time.perf_counter()
+    try:
+        response = await call_next(request)
+    except Exception:
+        logging.exception("request_failed id=%s method=%s path=%s", request_id, request.method, request.url.path)
+        raise
+    latency_ms = round((time.perf_counter() - started) * 1000, 2)
+    response.headers["X-Request-ID"] = request_id
+    logging.info("request_complete id=%s method=%s path=%s status=%s latency_ms=%s", request_id, request.method, request.url.path, response.status_code, latency_ms)
+    return response
+
+
 @app.get("/", include_in_schema=False)
 def index() -> RedirectResponse:
     return RedirectResponse(url="/docs")
+
+
+@app.get("/live")
+def live() -> dict[str, str]:
+    return {"status": "alive"}
 
 
 @app.get("/health", response_model=HealthResponse)
@@ -80,10 +107,22 @@ def natural_language_recommendations(
     request: NaturalLanguageRecommendationRequest,
 ) -> NaturalLanguageRecommendationResponse:
     try:
-        extracted = extract_rule_request(request.text)
+        extracted, trace = hybrid_extractor.extract(request.text)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     return NaturalLanguageRecommendationResponse(
         extracted=extracted,
         recommendation=recommend_by_rules(extracted),
+        extraction_source=trace.source,
     )
+
+
+@app.post("/v1/shopping-assistant", response_model=ShoppingAssistantResponse)
+def shopping_assistant(request: ShoppingAssistantRequest) -> ShoppingAssistantResponse:
+    try:
+        return shopping_service.handle(request)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except Exception as exc:
+        logging.exception("Shopping assistant failed")
+        raise HTTPException(status_code=500, detail=f"购物助手处理失败：{exc}") from exc
