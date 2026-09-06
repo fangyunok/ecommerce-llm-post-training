@@ -74,3 +74,13 @@ class RuleRecommendationResponse(BaseModel):
     eligible_products: list[str]
     answer: str
     decision_source: Literal["deterministic_rules"] = "deterministic_rules"
+
+
+class NaturalLanguageRecommendationRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=12_000)
+
+
+class NaturalLanguageRecommendationResponse(BaseModel):
+    extracted: RuleRecommendationRequest
+    recommendation: RuleRecommendationResponse
+    extraction_source: Literal["deterministic_parser"] = "deterministic_parser"

@@ -1,0 +1,17 @@
+{
+  "cases": 16,
+  "extraction_exact": 16,
+  "decision_passed": 16,
+  "by_split": {
+    "original": {
+      "cases": 11,
+      "extraction_exact": 11,
+      "decision_passed": 11
+    },
+    "holdout": {
+      "cases": 5,
+      "extraction_exact": 5,
+      "decision_passed": 5
+    }
+  }
+}

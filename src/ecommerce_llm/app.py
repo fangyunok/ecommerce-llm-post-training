@@ -7,6 +7,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
 
 from .config import settings
+from .constraint_extractor import extract_rule_request
 from .model_service import ModelService
 from .recommendation_engine import recommend_by_rules
 from .schemas import (
@@ -15,6 +16,8 @@ from .schemas import (
     HealthResponse,
     RuleRecommendationRequest,
     RuleRecommendationResponse,
+    NaturalLanguageRecommendationRequest,
+    NaturalLanguageRecommendationResponse,
 )
 
 
@@ -70,3 +73,17 @@ def chat(request: ChatRequest) -> ChatResponse:
 def rule_recommendations(request: RuleRecommendationRequest) -> RuleRecommendationResponse:
     """使用确定性硬约束和排序生成可审计的商品决策。"""
     return recommend_by_rules(request)
+
+
+@app.post("/v1/natural-language-recommendations", response_model=NaturalLanguageRecommendationResponse)
+def natural_language_recommendations(
+    request: NaturalLanguageRecommendationRequest,
+) -> NaturalLanguageRecommendationResponse:
+    try:
+        extracted = extract_rule_request(request.text)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return NaturalLanguageRecommendationResponse(
+        extracted=extracted,
+        recommendation=recommend_by_rules(extracted),
+    )

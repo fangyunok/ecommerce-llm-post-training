@@ -16,6 +16,7 @@
 | 实验003恢复测试 | 已完成 | 21/40（52.5%），恢复拒答但总体低于实验002 |
 | 1.5B模型规模对照 | 已完成 | 基座18/40（45.0%），SFT后24/40（60.0%） |
 | 规则与模型协同 | 已完成第一版 | 11道数值题规则路由全通过，混合结果34/40（85.0%） |
+| 自然语言约束抽取 | 已完成第一版 | 原题11/11、独立改写题5/5，字段与决策均全通过 |
 | QLoRA/SFT首轮训练 | 已完成 | RTX 3090训练约11分13秒，Adapter已保存 |
 | SFT固定业务评测 | 已完成 | 严格准确率4/8（50%），较基座提升25个百分点 |
 | DPO偏好对齐 | 未开始 | 后续阶段 |
@@ -29,6 +30,7 @@
 1.5B模型规模对照见[实验004计划](docs/experiment_004_plan.md)。
 实验004的完整结果、分类变化和局限性见[实验004报告](docs/experiment_004_qlora.md)。
 规则与模型协同的设计、评测口径和边界见[实验005报告](docs/experiment_005_hybrid_rules.md)。
+自然语言结构化抽取的实现与泛化测试见[实验006报告](docs/experiment_006_extraction.md)。
 
 ## 当前可运行服务
 
@@ -69,6 +71,7 @@ powershell -ExecutionPolicy Bypass -File scripts\smoke_test.ps1
 - `GET /health`：模型状态、设备与加载错误。
 - `POST /v1/chat/completions`：聊天生成，返回token用量和耗时。
 - `POST /v1/rule-recommendations`：接收结构化商品、硬约束和排序字段，返回可审计的确定性决策。
+- `POST /v1/natural-language-recommendations`：将受支持的自然语言商品比较请求抽取成JSON，再调用规则引擎决策。
 
 若后续已有LoRA Adapter，可设置 `ADAPTER_PATH` 后复用同一服务。
 
@@ -117,9 +120,10 @@ powershell -ExecutionPolicy Bypass -File scripts\train_qlora.ps1
 
 ```powershell
 python scripts\evaluate_hybrid.py
+python scripts\evaluate_extraction.py
 ```
 
-这一步不加载大模型、不需要GPU。当前输入是已结构化JSON；自然语言约束提取属于下一阶段，不能将85.0%直接解释为端到端线上准确率。
+这两项评测都不加载大模型、不需要GPU。85.0%的混合结果使用已结构化JSON；实验006另行验证了受支持自然语言的自动抽取，但其表达范围仍有限，不能将结果直接解释为开放域线上准确率。
 
 ## 上传GitHub前
 
