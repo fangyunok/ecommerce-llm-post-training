@@ -1,6 +1,6 @@
 # 电商大模型后训练与推理服务
 
-这是一个面向算法实习求职的可复现实验项目。目标是完成：
+这是一个面向电商商品理解与推荐场景的可复现大模型后训练项目。目标是完成：
 
 `业务定义 → 数据构造 → 基座评测 → QLoRA/SFT → DPO → 自动评测 → 推理服务`
 
@@ -38,7 +38,7 @@
 自然语言结构化抽取的实现与泛化测试见[实验006报告](docs/experiment_006_extraction.md)。
 困难集、单位归一化和多级排序结果见[实验007报告](docs/experiment_007_robustness.md)。
 真实1.5B模型抽取回退及统一接口验收见[实验008报告](docs/experiment_008_llm_fallback.md)。
-最终系统架构见[架构说明](docs/architecture.md)，部署步骤见[生产部署手册](docs/production_deployment.md)，求职讲解见[简历与面试材料](docs/interview_materials.md)。
+最终系统架构见[架构说明](docs/architecture.md)，部署步骤见[生产部署手册](docs/production_deployment.md)，项目设计与结果总结见[项目讲解材料](docs/interview_materials.md)。
 
 ## 当前可运行服务
 
