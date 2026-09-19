@@ -1,8 +1,42 @@
 # 电商大模型后训练与推理服务
 
-这是一个面向电商商品理解与推荐场景的可复现大模型后训练项目。目标是完成：
+[![tests](https://github.com/fangyunok/ecommerce-llm-post-training/actions/workflows/ci.yml/badge.svg)](https://github.com/fangyunok/ecommerce-llm-post-training/actions/workflows/ci.yml)
 
-`业务定义 → 数据构造 → 基座评测 → QLoRA/SFT → DPO → 自动评测 → 推理服务`
+这是一个面向电商商品理解与推荐场景的可复现大模型后训练项目。它重点回答两个问题：**小模型后训练能改善哪些任务**，以及**哪些确定性业务约束不应该交给大模型猜测**。
+
+完整链路：
+
+`业务定义 → 数据构造 → 基座评测 → QLoRA/SFT → 自动评测 → 规则—模型协同 → 推理服务`
+
+## 先看结论
+
+| 关注点 | 结论 | 可验证证据 |
+|---|---|---|
+| 后训练是否有效 | 1.5B 模型在40题固定集上由18/40提升到24/40 | [实验004报告](docs/experiment_004_qlora.md)与仓库内评测输出 |
+| 继续堆训练是否最优 | 否；纯模型仍不擅长严格数值约束 | [实验002](docs/experiment_002_qlora.md)、[实验003](docs/experiment_003_qlora.md)错误对照 |
+| 最终方案 | 数值决策走规则，语言任务走模型，混合结果34/40 | [实验005报告](docs/experiment_005_hybrid_rules.md) |
+| 自然语言如何进入规则系统 | Schema抽取、单位归一化、原文约束校验和失败封闭 | [实验006](docs/experiment_006_extraction.md)、[实验008](docs/experiment_008_llm_fallback.md) |
+| 是否可交付 | FastAPI统一接口、Docker镜像、CI测试与困难集回归 | [架构说明](docs/architecture.md)、[部署手册](docs/production_deployment.md) |
+
+> 这些结果用于证明实验与工程闭环，不代表线上业务指标。固定集和合成数据的规模、模板偏差及适用边界均在各实验报告中单独披露。
+
+## 系统架构
+
+```mermaid
+flowchart LR
+    A[用户请求] --> B[统一购物助手 API]
+    B --> C{意图与约束路由}
+    C -->|数值筛选/排序| D[确定性规则引擎]
+    C -->|自然语言约束| E[Schema 抽取]
+    E --> F[单位归一化与原文校验]
+    F -->|校验通过| D
+    F -->|无法可靠结构化| G[失败封闭或 LLM 回退]
+    C -->|语言生成| G
+    D --> H[可审计决策]
+    G --> I[模型回答]
+```
+
+这个仓库聚焦**后训练、评测和规则—模型协同**；不把检索系统、通用 Agent 编排或纯推荐模型训练混在同一个项目里。
 
 ## 项目状态
 
@@ -39,6 +73,24 @@
 困难集、单位归一化和多级排序结果见[实验007报告](docs/experiment_007_robustness.md)。
 真实1.5B模型抽取回退及统一接口验收见[实验008报告](docs/experiment_008_llm_fallback.md)。
 最终系统架构见[架构说明](docs/architecture.md)，部署步骤见[生产部署手册](docs/production_deployment.md)，项目设计与结果总结见[项目讲解材料](docs/interview_materials.md)。
+
+## 5分钟验证核心能力
+
+无需下载模型即可运行规则、抽取和鲁棒性回归：
+
+```powershell
+python -m pip install -r requirements-test.txt
+python -m unittest discover -s tests -v
+python scripts\generate_robustness_cases.py
+python scripts\evaluate_robustness.py
+```
+
+需要体验完整 API 时，再安装推理依赖并启动服务：
+
+```powershell
+python -m pip install -r requirements-serving.txt
+powershell -ExecutionPolicy Bypass -File scripts\start_api.ps1
+```
 
 ## 当前可运行服务
 
@@ -115,13 +167,15 @@ powershell -ExecutionPolicy Bypass -File scripts\train_qlora.ps1
 
 训练前先阅读并执行[QLoRA运行手册](docs/qlora_runbook.md)中的环境体检与参数检查。
 
-## 后续实验路线
+## 实验演进
 
-1. 在NVIDIA GPU环境完成首轮QLoRA/SFT训练，保存Adapter、训练日志和超参数。
-2. 使用固定评测集对比基座模型与SFT模型，报告严格准确率、延迟和失败案例。（已完成实验001）
-3. 根据错误分析清洗或补充训练数据，保持参数不变完成数据对照实验。（实验002已完成）
-4. 构造chosen/rejected偏好数据，增加DPO训练并与SFT结果对比。
-5. 最后根据业务需要增加商品知识检索或购物Agent，不把RAG与后训练效果混为一谈。
+1. **实验001：跑通闭环。** 完成首轮QLoRA/SFT与固定集评测，严格准确率由2/8提升到4/8。
+2. **实验002—003：数据质量对照。** 扩展到40题，定位否定、数值筛选、预算和拒答之间的权衡，并记录一次未带来总体提升的恢复实验。
+3. **实验004：模型规模对照。** 1.5B基座18/40，SFT后24/40，确认扩模有效但不足以可靠执行硬约束。
+4. **实验005—007：改变系统设计。** 将数值问题交给规则引擎，补充自然语言抽取、单位归一化、多级排序和35题困难集。
+5. **实验008：验证真实模型回退。** 1.5B抽取首轮3/5，经约束校验后5/5；统一接口验收3/3。
+
+下一阶段只在新增偏好数据质量可控、且有独立测试集时开展DPO；RAG和购物Agent不用于替代本仓库的后训练对照结论。
 
 ### 运行规则与模型协同评测
 
