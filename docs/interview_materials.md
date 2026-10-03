@@ -2,7 +2,7 @@
 
 ## 简历项目描述
 
-**电商大模型后训练与可审计推荐系统**｜Python、PyTorch、Transformers、QLoRA、FastAPI
+**大模型后训练与结构化输出服务（Qwen2.5 + QLoRA）**｜Python、PyTorch、Transformers、PEFT/QLoRA、Pydantic、FastAPI、Docker
 
 - 基于Qwen2.5完成0.5B/1.5B QLoRA监督微调及数据消融，建立40题分类型固定评测；1.5B模型由基座45.0%提升至SFT后60.0%。
 - 针对模型数值筛选仅1/11的问题，设计“结构化抽取—硬约束过滤—确定性排序—模型表达”混合架构，使同一40题混合结果达到34/40（85.0%）。
