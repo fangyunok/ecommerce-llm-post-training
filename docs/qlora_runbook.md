@@ -21,7 +21,7 @@ python scripts/preflight_training.py --model /path/to/Qwen2.5-0.5B-Instruct
 - `data/processed/sft_validation.jsonl`：225条；
 - 九类任务均衡分布。
 
-当前数据是可复现的合成启动数据，用于验证训练闭环。后续实验需要人工抽检，并补充更自然、多样、接近真实业务分布的数据。
+当前数据是可复现的合成启动数据，用于验证训练闭环。后续实验在此基础上人工抽检，并持续补充更自然、多样、接近真实业务分布的数据。
 
 实验002使用`data/eval/ecommerce_eval_v2.jsonl`的40条人工评测题。该文件保留原8题，并增加预算边界、否定属性、数值筛选和完整摘要题；不得将这些题目或答案复制到训练集。
 
@@ -105,14 +105,14 @@ python -m src.training.train_qlora \
 - 最终验证loss：0.000131；
 - 固定业务评测：基座2/8（25%），SFT后4/8（50%）。
 
-验证loss极低主要反映合成数据模板规律强，不代表真实业务准确率。下一轮优先增加语言表达、属性顺序、否定表达和数值字段的多样性，再保持训练参数不变进行数据对照实验。
+验证loss极低说明模型已充分拟合当前合成数据的结构规律。下一轮优先增加语言表达、属性顺序、否定表达和数值字段的多样性，再保持训练参数不变进行数据对照实验（实验002）。
 
 ## 微调后部署与对比
 
 将Adapter复制回部署机器，启动：
 
 ```powershell
-$env:ADAPTER_PATH = "D:\面试项目\outputs\sft_adapter"
+$env:ADAPTER_PATH = "<项目目录>\outputs\sft_adapter"
 powershell -ExecutionPolicy Bypass -File scripts\start_api.ps1
 ```
 
