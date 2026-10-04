@@ -34,15 +34,14 @@ POST /v1/shopping-assistant
 
 设置`MODEL_ID=Qwen/Qwen2.5-1.5B-Instruct`、`ADAPTER_PATH`和`ENABLE_LLM_EXTRACTION_FALLBACK=true`。生产环境应将模型缓存和Adapter挂载为只读卷，并由基础设施提供NVIDIA Container Toolkit。
 
-## 已验证与未验证
+## 验证状态
 
-- 已验证：Python接口、存活检查、请求日志、28项单元测试、35题困难集；
-- 已验证：Compose和Actions YAML可解析；
-- 已验证：GitHub Actions生产镜像构建成功，Docker job耗时1分54秒；
-- 当前Windows开发机没有Docker，因此容器运行验证由GitHub Linux runner完成；
-- 未验证：LLM抽取回退尚未在真实1.5B模型上评测。
+- 已验证：Python 接口、存活检查、请求日志、30 项单元测试、35 题困难集；
+- 已验证：Compose 与 Actions YAML 可解析；
+- 已验证：GitHub Actions 生产镜像构建成功，Docker job 耗时 1 分 54 秒；容器运行验证由 GitHub Linux runner 完成；
+- 已验证：LLM 抽取回退在真实 1.5B 模型上完成评测，固定困难集 `5/5`、统一接口三路由 `3/3`（详见[实验008](experiment_008_llm_fallback.md)）。
 
-真实模型回退评测使用5道刻意无法被规则解析的开放表达：
+真实模型回退评测使用 5 道刻意无法被规则解析的开放表达：
 
 ```powershell
 python scripts\evaluate_llm_fallback.py

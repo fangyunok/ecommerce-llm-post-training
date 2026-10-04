@@ -13,7 +13,7 @@
 启动：
 
 ```powershell
-cd D:\面试项目
+cd <项目目录>
 powershell -ExecutionPolicy Bypass -File scripts\start_api.ps1
 ```
 
@@ -148,7 +148,7 @@ JSON请求
 
 ## 6. 并发与生产注意事项
 
-当前服务使用生成锁串行处理请求，优点是逻辑稳定、内存可控，适合本地演示；缺点是并发请求需要排队。
+当前服务使用生成锁串行处理请求，逻辑稳定、内存可控，适合单机部署与本地验证；并发请求按序处理。
 
 不要在当前机器上简单增加多个Uvicorn worker：每个worker都会各自加载一份模型，内存占用近似成倍增长。真正的GPU生产部署可切换到vLLM等支持连续批处理的推理引擎，并加入：
 
@@ -164,7 +164,7 @@ JSON请求
 后续训练产出的LoRA Adapter目录通常包含adapter配置和权重。无需改API，只设置：
 
 ```powershell
-$env:ADAPTER_PATH = "D:\面试项目\outputs\sft_adapter"
+$env:ADAPTER_PATH = "<项目目录>\outputs\sft_adapter"
 powershell -ExecutionPolicy Bypass -File scripts\start_api.ps1
 ```
 
@@ -183,5 +183,5 @@ powershell -ExecutionPolicy Bypass -File scripts\start_api.ps1
 - A款：299元、30小时；
 - B款：239元、40小时。
 
-基座模型却推荐A款，违反预算且理由与给定数据矛盾。这不是部署失败，而是可复现的模型能力失败。后续SFT的目标之一是提升“硬约束满足率”，并用固定评测集验证改善，而不是只观察训练loss。
+基座模型却推荐A款，违反预算且理由与给定数据矛盾。这是一个可复现的案例，直接定义了后续的优化目标：提升“硬约束满足率”，并用固定评测集验证改善，而不是只观察训练 loss。
 
